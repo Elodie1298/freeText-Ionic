@@ -1,0 +1,29 @@
+<ion-header *ngIf="conversation">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title> {{ conversation.getTitle() }} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="conversation">
+  <ion-list>
+    <app-message
+            *ngFor="let message of conversation.messageList"
+            [message]="message"
+    ></app-message>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-textarea [(ngModel)]="newMessage" rows="2">
+    </ion-textarea>
+    <ion-buttons slot="end">
+      <ion-fab-button size="small">
+        <ion-icon name="send"></ion-icon>
+      </ion-fab-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

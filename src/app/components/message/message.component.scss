@@ -1,0 +1,36 @@
+ion-item {
+  position: relative;
+
+  ion-avatar {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    top: 0;
+  }
+
+  ion-label {
+    margin: 0 0 0 48px;
+    display: flex;
+    flex-direction: column;
+
+    .content {
+      white-space: initial;
+      padding: 8px 12px;
+      border: solid 1px #ddd;
+      border-radius: 8px;
+      max-width: 80%;
+    }
+    .metadata {
+      padding: 0 4px;
+    }
+  }
+}
+ion-item.user {
+  ion-avatar {
+    display: none;
+  }
+  ion-label {
+    align-items: flex-end;
+  }
+
+}

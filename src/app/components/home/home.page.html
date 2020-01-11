@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Conversations
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <app-conversation-item
+            [routerLink]="'/conversation/' + conversation.id"
+            *ngFor="let conversation of conversations"
+            [conversation]="conversation"
+    ></app-conversation-item>
+  </ion-list>
+</ion-content>

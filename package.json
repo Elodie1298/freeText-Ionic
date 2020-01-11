@@ -9,7 +9,8 @@
     "lr android": "ionic cordova run android --livereload",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "compodoc": "npx compodoc -p tsconfig.app.json"
   },
   "private": true,
   "dependencies": {

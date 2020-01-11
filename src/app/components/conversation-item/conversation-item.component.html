@@ -1,0 +1,9 @@
+<ion-item detail>
+  <ion-avatar slot="start">
+    <img [src]="avatar">
+  </ion-avatar>
+  <ion-label>
+    <h2> {{ conversation.getTitle() }} </h2>
+    <p> {{ conversation.getLastMessage().author.name }} : {{ conversation.getLastMessage().content }} </p>
+  </ion-label>
+</ion-item>

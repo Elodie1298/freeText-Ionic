@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Conversation} from "../../model/conversation";
 
 @Component({
   selector: 'app-conversation-item',
@@ -9,9 +10,7 @@ export class ConversationItemComponent implements OnInit {
 
   avatar = 'assets/shapes.svg';
 
-  title = 'Victor';
-
-  content = 'Comment tu vas ?';
+  @Input() conversation: Conversation;
 
   constructor() { }
 
