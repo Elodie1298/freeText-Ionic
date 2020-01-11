@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Conversation} from "../../model/conversation";
+import {user} from "../../app.const";
 
 @Component({
   selector: 'app-conversation-item',
@@ -16,4 +17,11 @@ export class ConversationItemComponent implements OnInit {
 
   ngOnInit() {}
 
+  get content(): string {
+    if (this.conversation.getLastMessage().author.id == user.id) {
+      return this.conversation.getLastMessage().content;
+    } else {
+      return this.conversation.getLastMessage().author.name + ': ' + this.conversation.getLastMessage().content;
+    }
+  }
 }
