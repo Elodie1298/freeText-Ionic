@@ -1,5 +1,7 @@
 {
   "name": "freeText-Ionic",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
