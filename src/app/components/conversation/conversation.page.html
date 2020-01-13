@@ -18,10 +18,10 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-textarea [(ngModel)]="newMessage" rows="2">
+    <ion-textarea [(ngModel)]="newMessage" rows="2" placeholder="Write your message">
     </ion-textarea>
     <ion-buttons slot="end">
-      <ion-fab-button size="small">
+      <ion-fab-button size="small" (click)="sendMessage()">
         <ion-icon name="send"></ion-icon>
       </ion-fab-button>
     </ion-buttons>

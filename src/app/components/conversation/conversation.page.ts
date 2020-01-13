@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {Conversation} from "../../model/conversation";
 import {ActivatedRoute, Params} from "@angular/router";
 import {NgModel} from "@angular/forms";
+import {Message} from "../../model/message";
+import {user} from "../../app.const";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-conversation',
@@ -22,4 +25,11 @@ export class ConversationPage implements OnInit {
     });
   }
 
+  sendMessage(): void {
+    if (!isNullOrUndefined(this.newMessage) && this.newMessage.toString() !== '') {
+      let message = new Message(user, this.newMessage.toString(), new Date());
+      this.conversation.messageList.push(message);
+      this.newMessage = null;
+    }
+  }
 }
