@@ -19,4 +19,17 @@ export class ApiService {
     return this.http.get(`${environment.api}/conversations?id_user=${user.id}`)
         .toPromise();
   }
+
+  logUser(name: string, phoneNumber: string): Promise<any> {
+    let body = new URLSearchParams();
+    body.set('name', name);
+    body.set('phoneNumber', phoneNumber);
+    return this.http.post(`${environment.api}/user`,
+        body.toString(),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
+        }).toPromise()
+  }
 }

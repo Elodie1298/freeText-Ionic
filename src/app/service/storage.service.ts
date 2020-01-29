@@ -10,6 +10,20 @@ export class StorageService {
 
   constructor(private storage: Storage) {}
 
+  isFirstLaunch(): Promise<any> {
+      return new Promise<any>(resolve => {
+          this.storage.get('userId')
+              .then((userId: number) => {
+                  console.log('userId: ', userId);
+                  resolve(isNullOrUndefined(userId));
+              });
+      });
+  }
+
+  registerUser(userId: number): Promise<any> {
+      return this.storage.set('userId', userId);
+  }
+
   updateConversations(): Promise<any> {
     return this.storage.set('conversations', Conversation.conversations);
   }

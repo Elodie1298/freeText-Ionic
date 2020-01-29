@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 
-import { Platform } from '@ionic/angular';
+import {NavController, Platform} from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import {StorageService} from "./service/storage.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -15,17 +16,25 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private navCtrl: NavController
   ) {
     this.initializeApp();
   }
 
   initializeApp() {
     this.platform.ready()
-        .then(_ => this.storageService.loadConversations())
+        .then(_ => this.storageService.isFirstLaunch())
+        .then((isFirstLaunch: boolean) => {
+            if (isFirstLaunch) {
+                return this.navCtrl.navigateForward('/start', {animated: false});
+            } else {
+                return new Promise(resolve => resolve(true));
+            }
+        })
         .then(_ => {
-          this.statusBar.styleDefault();
-          this.splashScreen.hide();
+            this.statusBar.styleDefault();
+            this.splashScreen.hide();
         });
   }
 }

@@ -8,6 +8,10 @@ const routes: Routes = [
     path: 'conversation/:id',
     loadChildren: () => import('./components/conversation/conversation.module').then(m => m.ConversationPageModule)
   },
+  {
+    path: 'start',
+    loadChildren: () => import('./components/start/start.module').then(m => m.StartPageModule)
+  },
 ];
 
 @NgModule({
