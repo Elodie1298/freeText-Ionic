@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS message (
 CREATE TABLE IF NOT EXISTS conversation (
     id_conversation INTEGER UNIQUE,
     title TEXT,
+    timestamp TEXT,
     synchronized NUMERIC
 );
 
@@ -24,5 +25,6 @@ CREATE TABLE IF NOT EXISTS participant (
     id_user INTEGER,
     id_conversation INTEGER,
     surname TEXT,
+    timestamp TEXT,
     synchronized NUMERIC
 );
