@@ -21,10 +21,5 @@ export class Participant {
     /**
      * Timestamp when the user was added to the conversation
      */
-    timestamp: any;
-
-    /**
-     * Is the participant register on the server
-     */
-    synchronized?: boolean;
+    timestamp: string;
 }

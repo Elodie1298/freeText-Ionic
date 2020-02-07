@@ -26,10 +26,5 @@ export class Message {
     /**
      * Timestamp of the message
      */
-    timestamp: any;
-
-    /**
-     * Is the message present on the server
-     */
-    synchronized?: boolean;
+    timestamp: string;
 }

@@ -1,63 +1,77 @@
 import { Injectable } from '@angular/core';
-import {DatabaseService} from "./database.service";
+import {Participant} from '../../model/participant';
+import {DatabaseService} from './database.service';
 
 @Injectable({
   providedIn: 'root'
 })
+/**
+ * Service that manage participants in local database
+ */
 export class ParticipantService {
 
-  constructor() { }
+  /**
+   * Get all participant stored in the temporary database
+   */
+  getAllTemp(): Promise<Participant[]> {
+    return DatabaseService.db.executeSql(
+        'select * from participant_temp', []);
+  }
 
   /**
-   * Get participant items from conversation's id
+   * Get participant for a given conversation
    * @param id_conversation
    */
-  findFromConversation(id_conversation: number): Promise<any> {
+  getForConversation(id_conversation: number): Promise<Participant[]> {
     return DatabaseService.db.executeSql(
-        'SELECT * FROM participant WHERE id_conversation=?',
-        [id_conversation])
+        'select * from participant where id_conversation = ?',
+        [id_conversation]);
   }
 
   /**
-   * Get participant items from user's id
-   * @param id_user
+   * Get unsent participant for a given conversation
+   * @param id_conversation
    */
-  findFromParticipant(id_user: number): Promise<any> {
+  getForConversationTemp(id_conversation: number): Promise<Participant[]> {
     return DatabaseService.db.executeSql(
-        'SELECT * FROM participant WHERE id_user=?',
-        [id_user])
+        'select * from participant_temp where id_conversation = ?',
+        [id_conversation]);
   }
 
-  addParticipant(id_conversation: number, id_user: number, surname: string, fromServer:boolean = false): Promise<any> {
-    return DatabaseService.db.executeSql(
-        'SELECT * FROM participant WHERE id_conversation=? AND id_user=?',
-        [id_conversation, id_user])
-        .then(result => {
-          if (result.length == 0) {
-            return DatabaseService.db.executeSql(
-                'INSERT INTO participant (id_conversation, id_user, surname, synchronized) VALUES (?, ?, ?, ?)',
-                [id_conversation, id_user, surname, fromServer]);
-          } else {
-            let elem = result.rows.item(0);
-            if (elem.surname != surname ||
-                (fromServer && elem.synchronized != fromServer)) {
-              return DatabaseService.db.executeSql(
-                  'UPDATE participant SET surname=? AND synchornized=? WHERE id_conversation=? AND id_user=?',
-                  [surname, fromServer, id_conversation, id_user]);
-            } else {
-              return new Promise(resolve => resolve(true));
-            }
-          }
-        })
-  }
-
-  addMultipleParticipants(rows: {id_conversation: number, id_user: number, surname: string}[], fromServer: boolean = false) {
-    if (rows.length > 0) {
-      const participant = rows.pop();
-      return this.addParticipant(participant.id_conversation, participant.id_user, participant.surname, fromServer)
-          .then(_ => this.addMultipleParticipants(rows, fromServer));
-    } else {
-      return new Promise(resolve => resolve(true));
+  /**
+   * Insert participant into the appropriate table
+   * @param participant
+   * @param fromServer
+   */
+  set(participant: Participant, fromServer: boolean=false): Promise<any> {
+    let table = 'participant';
+    if (!fromServer) {
+      table += '_temp';
     }
+    return DatabaseService.db.executeSql(
+        `insert into ${table} (id_conversation, id_user, nickname, 
+                      timestamp) values (?, ?, ?, ?)`,
+        [participant.id_conversation, participant.id_user,
+        participant.nickname, participant.timestamp]);
+  }
+
+  /**
+   * Delete participant from temporary table
+   * @param participant
+   */
+  private deleteTemp(participant: Participant): Promise<any> {
+    return DatabaseService.db.executeSql(
+        'delete from participant_temp where id_conversation = ? and' +
+        'id_user = ?',
+        [participant.id_conversation, participant.id_user]);
+  }
+
+  /**
+   * Save a participant that has been saved to the server
+   * @param participant
+   */
+  save(participant: Participant): Promise<any> {
+    return this.deleteTemp(participant)
+        .then(_ => this.set(participant, true));
   }
 }

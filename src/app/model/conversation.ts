@@ -16,10 +16,5 @@ export class Conversation {
     /**
      * Timestamp of the creation of the conversation
      */
-    timestamp: any;
-
-    /**
-     * Is the conversation present on the server
-     */
-    synchronized?: boolean;
+    timestamp: string;
 }

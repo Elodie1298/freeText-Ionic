@@ -17,14 +17,35 @@ CREATE TABLE IF NOT EXISTS message (
 CREATE TABLE IF NOT EXISTS conversation (
     id_conversation INTEGER UNIQUE,
     title TEXT,
-    timestamp TEXT,
-    synchronized NUMERIC
+    timestamp TEXT
 );
 
 CREATE TABLE IF NOT EXISTS participant (
     id_user INTEGER,
     id_conversation INTEGER,
     surname TEXT,
-    timestamp TEXT,
-    synchronized NUMERIC
+    timestamp TEXT
+);
+
+CREATE TABLE IF NOT EXISTS message (
+    id_message INTEGER UNIQUE,
+    id_conversation INTEGER,
+    id_user INTEGER,
+    content TEXT,
+    timestamp TEXT
+);
+
+CREATE TABLE IF NOT EXISTS participant_temp (
+    id_user INTEGER,
+    id_conversation INTEGER,
+    surname TEXT,
+    timestamp TEXT
+);
+
+CREATE TABLE IF NOT EXISTS message_temp (
+    id_message INTEGER PRIMARY KEY,
+    id_conversation INTEGER,
+    id_user INTEGER,
+    content TEXT,
+    timestamp TEXT
 );

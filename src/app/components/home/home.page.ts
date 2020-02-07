@@ -17,7 +17,7 @@ export class HomePage implements OnInit {
     }
 
     ngOnInit(): void {
-        this.conversationService.findAll()
+        this.conversationService.getAll()
             .then(result => {
                 for (let i=0; i<result.rows.length; i++)
                 this.conversations.push(result.rows.item(i));

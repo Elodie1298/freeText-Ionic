@@ -34,10 +34,10 @@ export class StartPage implements OnInit {
   send(): void {
     if (isNullOrUndefined(this.name.errors) && isNullOrUndefined(this.phoneNumber.errors)) {
       console.log('sending: ', this.name.value, this.phoneNumber.value);
-      this.api.logUser(this.name.value, this.phoneNumber.value)
+      this.api.login(this.name.value, this.phoneNumber.value)
           .then(res => {
               console.log(res);
-              this.storage.registerUser(res);
+              this.storage.setUserId(res);
               this.navCtrl.navigateForward('/');
           })
           .catch(err => console.log(err));
