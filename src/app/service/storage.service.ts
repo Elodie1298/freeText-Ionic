@@ -24,22 +24,24 @@ export class StorageService {
       return this.storage.set('userId', userId);
   }
 
-  updateConversations(): Promise<any> {
-    return this.storage.set('conversations', Conversation.conversations);
-  }
+  // TODO: replace
+  // updateConversations(): Promise<any> {
+  //     return this.storage.set('conversations', Conversation.conversations);
+  // }
 
-  loadConversations(): Promise<any> {
-    return new Promise<any>(resolve => {
-      this.storage.get('conversations')
-          .then((conversations: Map<number, Conversation>) => {
-            if (isNullOrUndefined(conversations)) {
-              Conversation.conversations = new Map<number, Conversation>();
-            } else {
-              Conversation.conversations = conversations;
-            }
-            resolve(true);
-          });
-    })
-  }
+  // TODO: replace
+  // loadConversations(): Promise<any> {
+  //     return new Promise<any>(resolve => {
+  //         this.storage.get('conversations')
+  //             .then((conversations: Map<number, Conversation>) => {
+  //                 if (isNullOrUndefined(conversations)) {
+  //                     Conversation.conversations = new Map<number, Conversation>();
+  //                 } else {
+  //                     Conversation.conversations = conversations;
+  //                 }
+  //                 resolve(true);
+  //             });
+  //     })
+  // }
 
 }

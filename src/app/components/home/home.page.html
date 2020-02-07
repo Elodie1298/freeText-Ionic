@@ -9,7 +9,7 @@
 <ion-content>
   <ion-list>
     <app-conversation-item
-            [routerLink]="'/conversation/' + conversation.id"
+            [routerLink]="'/conversation/' + conversation.id_conversation"
             *ngFor="let conversation of conversations"
             [conversation]="conversation"
     ></app-conversation-item>

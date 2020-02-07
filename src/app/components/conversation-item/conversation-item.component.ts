@@ -15,13 +15,16 @@ export class ConversationItemComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.conversation);
+  }
 
   get content(): string {
-    if (this.conversation.getLastMessage().author.id == user.id) {
-      return this.conversation.getLastMessage().content;
-    } else {
-      return this.conversation.getLastMessage().author.name + ': ' + this.conversation.getLastMessage().content;
-    }
+    // if (this.conversation.getLastMessage().author.id == user.id) {
+    //   return this.conversation.getLastMessage().content;
+    // } else {
+    //   return this.conversation.getLastMessage().author.name + ': ' + this.conversation.getLastMessage().content;
+    // }
+    return 'coucou'
   }
 }

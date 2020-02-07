@@ -1,9 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from "../../service/api.service";
 import {Conversation} from "../../model/conversation";
-import {isNullOrUndefined} from "util";
-import {Message} from "../../model/message";
-import {User} from "../../model/user";
+import {ConversationService} from "../../service/database/conversation.service";
 
 @Component({
     selector: 'app-home',
@@ -12,32 +10,18 @@ import {User} from "../../model/user";
 })
 export class HomePage implements OnInit {
 
-    conversations: Conversation[];
+    conversations: Conversation[] = [];
 
-    constructor(private api: ApiService) {
+    constructor(private api: ApiService,
+                private conversationService: ConversationService) {
     }
 
     ngOnInit(): void {
-        this.api.getAllConversations()
+        this.conversationService.findAll()
             .then(result => {
-                let conversations = new Map<number, Conversation>();
-                for (let row of result) {
-                    let conversation = Conversation.getConversation(row.id_conversation, row.title)
-                    let user = User.getUser(row.id_user, row.name);
-                    if (!conversation.participants.includes(user)) {
-                        conversation.participants.push(user);
-                    }
-                    if (!isNullOrUndefined(row.content)) {
-                        let message = new Message(user, row.content, new Date(row.timestamp));
-                        conversation.messageList.push(message);
-                    }
-                }
-                this.conversations = new Array<Conversation>();
-                Conversation.conversations.forEach((conversation, _) => {
-                    this.conversations.push(conversation);
-                });
+                for (let i=0; i<result.rows.length; i++)
+                this.conversations.push(result.rows.item(i));
             })
-            .catch(error => console.log(error));
     }
 
 }

@@ -1,11 +1,12 @@
-import {isNullOrUndefined} from "util";
-
+/**
+ * User
+ */
 export class User {
 
     /**
      * Id of the user
      */
-    id: number;
+    id_user: number;
 
     /**
      * Name of the user
@@ -13,30 +14,12 @@ export class User {
     name: string;
 
     /**
-     * list of all users
+     * Phone number of the user
      */
-    static users = new Map<number, User>();
+    phone_number: string;
 
     /**
-     * Constructor of user
-     * @param id user's id
-     * @param name user's name
+     * Country code for the phone number
      */
-    private constructor(id: number, name: string) {
-        this.id = id;
-        this.name = name;
-        User.users.set(id, this);
-    }
-
-    /**
-     * Recover a user, create it if not exist
-     * @param id user's id
-     * @param name user's name
-     */
-    static getUser(id: number, name: string) {
-        if (isNullOrUndefined(User.users.get(id))) {
-            new User(id, name);
-        }
-        return User.users.get(id);
-    }
+    country_code?: number;
 }

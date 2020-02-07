@@ -1,14 +1,22 @@
-import {User} from "./user";
-
 /**
  * A message exchange in a conversation
  */
 export class Message {
 
     /**
-     * Author
+     * Id of the message
      */
-    author: User;
+    id_message: number;
+
+    /**
+     * Id of the conversation
+     */
+    id_conversation: number;
+
+    /**
+     * Id of the author
+     */
+    id_user: number;
 
     /**
      * Content of the message
@@ -18,17 +26,5 @@ export class Message {
     /**
      * Timestamp of the message
      */
-    timestamp: Date;
-
-    /**
-     * Constructor of message
-     * @param author message's author
-     * @param content message's content
-     * @param timestamp message's timestamp
-     */
-    constructor(author: User, content: string, timestamp: Date) {
-        this.author = author;
-        this.content = content;
-        this.timestamp = timestamp;
-    }
+    timestamp: any;
 }
