@@ -14,7 +14,6 @@ import {integerToTimestamp} from '../app.const';
 })
 /**
  * Service that connect to APi endpoints
- * WIP
  */
 export class ApiService {
 
@@ -33,7 +32,7 @@ export class ApiService {
      * @param name Name of the user
      * @param phoneNumber Phone number of the user
      */
-    login(name: string, phoneNumber: string): Promise<{id_user: number}> {
+    login(name: string, phoneNumber: string): Promise<{ id_user: number }> {
         let url = `${environment.api}/login`;
         let body = new URLSearchParams();
         body.set('name', name);
@@ -43,7 +42,7 @@ export class ApiService {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            }).toPromise() as Promise<{id_user: number}>;
+            }).toPromise() as Promise<{ id_user: number }>;
     }
 
 
@@ -51,9 +50,9 @@ export class ApiService {
      * Get user's information
      * @param id_user Id of the user
      */
-    getUser(id_user: number): Promise<User> {
+    getUser(id_user: number): Promise<User[]> {
         let url = `${environment.api}/user?id_user=${id_user}`;
-        return this.http.get(url).toPromise() as Promise<User>;
+        return this.http.get(url).toPromise() as Promise<User[]>;
     }
 
 
@@ -61,19 +60,17 @@ export class ApiService {
      * Get user's conversations
      */
     getConversations(): Promise<Conversation[]> {
-        return this.storage.getUserId()
-            .then((userId: number) => {
-                let url = `${environment.api}/conversations?id_user=${userId}`;
-                return this.storage.getConversationSynchroTime()
-                    .then((timestamp: Date) => {
-                        if (timestamp) {
-                            let timestampString = integerToTimestamp(
-                                    new Date(timestamp).getTime());
-                            url += `&timestamp=${timestampString}`;
-                        }
-                        return this.http.get(url).toPromise() as
-                            Promise<Conversation[]>;
-                    });
+        let url =
+            `${environment.api}/conversations?id_user=${StorageService.userId}`;
+        return this.storage.getConversationSynchroTime()
+            .then((timestamp: Date) => {
+                if (timestamp) {
+                    let timestampString = integerToTimestamp(
+                        new Date(timestamp).getTime());
+                    url += `&timestamp=${timestampString}`;
+                }
+                return this.http.get(url).toPromise() as
+                    Promise<Conversation[]>;
             });
     }
 
@@ -100,19 +97,17 @@ export class ApiService {
      * Get user's messages
      */
     getMessages(): Promise<Message[]> {
-        return this.storage.getUserId()
-            .then((userId: number) => {
-                let url = `${environment.api}/messages?id_user=${userId}`;
-                return this.storage.getMessageSynchroTime()
-                    .then((timestamp: Date) => {
-                        if (timestamp) {
-                            let timestampString =
-                                integerToTimestamp(new Date(timestamp).getTime());
-                            url += `&timestamp=${timestampString}`;
-                        }
-                        return this.http.get(url).toPromise() as
-                            Promise<Message[]>;
-                    });
+        let url =
+            `${environment.api}/messages?id_user=${StorageService.userId}`;
+        return this.storage.getMessageSynchroTime()
+            .then((timestamp: Date) => {
+                if (timestamp) {
+                    let timestampString =
+                        integerToTimestamp(new Date(timestamp).getTime());
+                    url += `&timestamp=${timestampString}`;
+                }
+                return this.http.get(url).toPromise() as
+                    Promise<Message[]>;
             });
     }
 
@@ -141,19 +136,17 @@ export class ApiService {
      * Get user's linked participant
      */
     getParticipants(): Promise<Participant[]> {
-        return this.storage.getUserId()
-            .then((userId: number) => {
-                let url = `${environment.api}/participants?id_user=${userId}`;
-                return this.storage.getParticipantSynchroTime()
-                    .then((timestamp: Date) => {
-                        if (timestamp) {
-                            let timestampString =
-                                integerToTimestamp(timestamp.getTime());
-                            url += `&timestamp=${timestampString}`;
-                        }
-                        return this.http.get(url).toPromise() as
-                            Promise<Participant[]>;
-                    });
+        let url =
+            `${environment.api}/participants?id_user=${StorageService.userId}`;
+        return this.storage.getParticipantSynchroTime()
+            .then((timestamp: Date) => {
+                if (timestamp) {
+                    let timestampString =
+                        integerToTimestamp(timestamp.getTime());
+                    url += `&timestamp=${timestampString}`;
+                }
+                return this.http.get(url).toPromise() as
+                    Promise<Participant[]>;
             });
     }
 

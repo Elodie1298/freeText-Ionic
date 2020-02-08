@@ -39,10 +39,19 @@ export class UserService {
      */
     set(user: User): Promise<any> {
         return DatabaseService.db.executeSql(
-            'insert into user (id_user, name, phone_number,' +
-            ' country_code) values (?, ?, ?, ?)',
-            [user.id_user, user.name, user.country_code,
-                user.country_code]);
+            'select * from user where id_user = ?',
+            [user.id_user])
+            .then(result => {
+                if (result.rows.length > 0) {
+                    return new Promise(resolve => resolve(true));
+                } else {
+                    return DatabaseService.db.executeSql(
+                        'insert into user (id_user, name, phone_number,' +
+                        ' country_code) values (?, ?, ?, ?)',
+                        [user.id_user, user.name, user.country_code,
+                            user.country_code]);
+                }
+            })
     }
 
     /**

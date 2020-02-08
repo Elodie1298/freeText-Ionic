@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
-import {ConversationItemComponent} from "../conversation-item/conversation-item.component";
+import {ConversationItemComponent} from "./conversation-item/conversation-item.component";
 
 @NgModule({
   imports: [

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Storage} from "@ionic/storage";
 import {isNullOrUndefined} from "util";
+import {user} from '../app.const';
 
 @Injectable({
     providedIn: 'root'
@@ -10,12 +11,13 @@ import {isNullOrUndefined} from "util";
  */
 export class StorageService {
 
+    static userId: number;
+
     /**
      * Constructor of Storage service
      * @param storage
      */
-    constructor(private storage: Storage) {
-    }
+    constructor(private storage: Storage) {}
 
 
     /**
@@ -23,8 +25,11 @@ export class StorageService {
      */
     isFirstLaunch(): Promise<any> {
         return new Promise<any>(resolve => {
-            this.getUserId()
+            this.storage.get('userId')
                 .then((userId: number) => {
+                    if (userId) {
+                        StorageService.userId = userId;
+                    }
                     console.log(userId);
                     resolve(isNullOrUndefined(userId));
                 });
@@ -37,6 +42,7 @@ export class StorageService {
      * @param userId
      */
     setUserId(userId: number): Promise<any> {
+        StorageService.userId = userId;
         return this.storage.set('userId', userId);
     }
 

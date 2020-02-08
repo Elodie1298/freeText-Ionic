@@ -21,9 +21,7 @@ export class ConversationPage implements OnInit {
 
   newMessage: NgModel;
 
-  constructor(private route: ActivatedRoute,
-              private conversationService: ConversationService,
-              private messageService: MessageService) { }
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {

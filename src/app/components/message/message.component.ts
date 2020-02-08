@@ -27,9 +27,7 @@ export class MessageComponent implements OnInit {
 
     ngOnInit() {
         this.timestamp = new Date(this.message.timestamp);
-        this.storage.getUserId()
-            .then((userId: number) =>
-                this.isUser = this.message.id_user === userId);
+        this.isUser = this.message.id_user === StorageService.userId;
         this.userService.get(this.message.id_user)
             .then((user: User[]) => this.author = user[0]);
     }

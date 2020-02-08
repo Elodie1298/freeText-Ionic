@@ -9,7 +9,6 @@ import {Message} from '../model/message';
 import {Participant} from '../model/participant';
 import {Conversation} from '../model/conversation';
 import {User} from '../model/user';
-import {log} from 'util';
 
 @Injectable({
     providedIn: 'root'
@@ -194,7 +193,7 @@ export class DataManagerService {
         if (usersId.length > 0) {
             let userId = usersId.pop();
             return this.api.getUser(userId.id_user)
-                .then((user: User) => this.userService.set(user))
+                .then((user: User[]) => this.userService.set(user[0]))
                 .then(_ => this.addUsers(usersId));
         } else {
             return new Promise<any>(resolve => resolve(true));
