@@ -53,13 +53,23 @@ export class MessageService {
             params = [message.id_message, message.id_conversation,
                 message.id_user, message.content,
                 integerToTimestamp(message.timestamp)];
+            return DatabaseService.db.executeSql(
+                'select * from message where id_message = ?'
+                ,[message.id_message])
+                .then(result => {
+                    if (result.rows.length > 0) {
+                        return new Promise(resolve => resolve(true))
+                    } else {
+                        return DatabaseService.db.executeSql(query, params);
+                    }
+                });
         } else {
             query = 'insert into message_temp (id_conversation,' +
                 ' id_user, content, timestamp) values (?, ?, ?, ?, ?)';
             params = [message.id_conversation, message.id_user,
                 message.content, integerToTimestamp(message.timestamp)];
+            return DatabaseService.db.executeSql(query, params);
         }
-        return DatabaseService.db.executeSql(query, params);
     }
 
     /**

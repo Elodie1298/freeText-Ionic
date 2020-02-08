@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS conversation (
 CREATE TABLE IF NOT EXISTS participant (
     id_user INTEGER,
     id_conversation INTEGER,
-    surname TEXT,
+    nickname TEXT,
     timestamp INTEGER
 );
 
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS message (
 CREATE TABLE IF NOT EXISTS participant_temp (
     id_user INTEGER,
     id_conversation INTEGER,
-    surname TEXT,
+    nickname TEXT,
     timestamp INTEGER
 );
 
