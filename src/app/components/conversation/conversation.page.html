@@ -3,14 +3,14 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title> {{ conversation.getTitle() }} </ion-title>
+    <ion-title> {{ conversation.title }} </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="conversation">
   <ion-list>
     <app-message
-            *ngFor="let message of conversation.messageList"
+            *ngFor="let message of messages"
             [message]="message"
     ></app-message>
   </ion-list>

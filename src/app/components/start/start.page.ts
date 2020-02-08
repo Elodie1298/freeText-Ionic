@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {FormControl, NgModel, Validators} from "@angular/forms";
+import {FormControl, Validators} from "@angular/forms";
 import {isNullOrUndefined} from "util";
 import {ApiService} from "../../service/api.service";
 import {StorageService} from "../../service/storage.service";
 import {NavController} from "@ionic/angular";
+import {DataManagerService} from '../../service/data-manager.service';
 
 @Component({
   selector: 'app-start',
@@ -17,7 +18,8 @@ export class StartPage implements OnInit {
 
   constructor(private api: ApiService,
               private storage: StorageService,
-              private navCtrl: NavController) { }
+              private navCtrl: NavController,
+              private dataManager: DataManagerService) { }
 
   ngOnInit() {
     this.name = new FormControl('', [
@@ -37,8 +39,9 @@ export class StartPage implements OnInit {
       this.api.login(this.name.value, this.phoneNumber.value)
           .then(res => {
               console.log(res);
-              this.storage.setUserId(res);
-              this.navCtrl.navigateForward('/');
+              this.storage.setUserId(res.id_user)
+                  .then(_ => this.dataManager.startSynchro())
+              this.navCtrl.navigateForward('/home');
           })
           .catch(err => console.log(err));
     } else {

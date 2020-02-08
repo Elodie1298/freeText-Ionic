@@ -1,25 +1,29 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>
-      Register
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  <ion-item>
-    <ion-label position="floating">Name</ion-label>
-    <ion-input type="text" [formControl]="name"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label position="floating">Phone number</ion-label>
-    <ion-input inputmode="tel" [formControl]="phoneNumber"></ion-input>
-  </ion-item>
+    <div class="content">
 
-  <ion-buttons>
-    <ion-button (click)="send()">
-      <ion-icon name="send" slot="start"></ion-icon>
-      Register
-    </ion-button>
-  </ion-buttons>
+        <ion-card>
+            <ion-card-header>
+                <ion-card-title>
+                    Register
+                </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-item>
+                    <ion-label position="floating">Name</ion-label>
+                    <ion-input type="text" [formControl]="name"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="floating">Phone number</ion-label>
+                    <ion-input inputmode="tel" [formControl]="phoneNumber"></ion-input>
+                </ion-item>
+
+                <ion-buttons>
+                    <ion-button (click)="send()">
+                        <ion-icon name="send" slot="start"></ion-icon>
+                        Register
+                    </ion-button>
+                </ion-buttons>
+            </ion-card-content>
+        </ion-card>
+    </div>
 </ion-content>

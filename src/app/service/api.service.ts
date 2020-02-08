@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../../environments/environment";
-import {User} from "../model/user";
-import {Conversation} from "../model/conversation";
-import {StorageService} from "./storage.service";
-import {Message} from "../model/message";
-import {Participant} from "../model/participant";
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../../environments/environment';
+import {User} from '../model/user';
+import {Conversation} from '../model/conversation';
+import {StorageService} from './storage.service';
+import {Message} from '../model/message';
+import {Participant} from '../model/participant';
+import {timestamp} from 'rxjs/operators';
+import {integerToTimestamp} from '../app.const';
 
 @Injectable({
     providedIn: 'root'
@@ -31,7 +33,7 @@ export class ApiService {
      * @param name Name of the user
      * @param phoneNumber Phone number of the user
      */
-    login(name: string, phoneNumber: string): Promise<number> {
+    login(name: string, phoneNumber: string): Promise<{id_user: number}> {
         let url = `${environment.api}/login`;
         let body = new URLSearchParams();
         body.set('name', name);
@@ -39,9 +41,9 @@ export class ApiService {
         return this.http.post(url, body.toString(),
             {
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            }).toPromise() as Promise<number>;
+            }).toPromise() as Promise<{id_user: number}>;
     }
 
 
@@ -52,7 +54,6 @@ export class ApiService {
     getUser(id_user: number): Promise<User> {
         let url = `${environment.api}/user?id_user=${id_user}`;
         return this.http.get(url).toPromise() as Promise<User>;
-        // TODO: save user in database
     }
 
 
@@ -63,11 +64,17 @@ export class ApiService {
         return this.storage.getUserId()
             .then((userId: number) => {
                 let url = `${environment.api}/conversations?id_user=${userId}`;
-                return this.http.get(url).toPromise() as Promise<Conversation[]>;
+                return this.storage.getConversationSynchroTime()
+                    .then((timestamp: Date) => {
+                        if (timestamp) {
+                            let timestampString = integerToTimestamp(
+                                    new Date(timestamp).getTime());
+                            url += `&timestamp=${timestampString}`;
+                        }
+                        return this.http.get(url).toPromise() as
+                            Promise<Conversation[]>;
+                    });
             });
-        // TODO: save conversations in real database
-        // TODO: save last conversation synchronisation in database
-        // TODO: manage get with timestamp
     }
 
 
@@ -79,14 +86,13 @@ export class ApiService {
         let url = `${environment.api}/conversations`;
         let body = new URLSearchParams();
         body.set('title', conversation.title);
-        body.set('timestamp', conversation.timestamp);
+        body.set('timestamp', integerToTimestamp(conversation.timestamp));
         return this.http.post(url, body.toString(),
             {
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).toPromise() as Promise<number>;
-        // TODO: delete from temp table and save in real one with the insert id
     }
 
 
@@ -97,11 +103,17 @@ export class ApiService {
         return this.storage.getUserId()
             .then((userId: number) => {
                 let url = `${environment.api}/messages?id_user=${userId}`;
-                return this.http.get(url).toPromise() as Promise<Message[]>;
+                return this.storage.getMessageSynchroTime()
+                    .then((timestamp: Date) => {
+                        if (timestamp) {
+                            let timestampString =
+                                integerToTimestamp(new Date(timestamp).getTime());
+                            url += `&timestamp=${timestampString}`;
+                        }
+                        return this.http.get(url).toPromise() as
+                            Promise<Message[]>;
+                    });
             });
-        // TODO: save conversations in real database
-        // TODO: save last message synchronisation in database
-        // TODO: manage get with timestamp
     }
 
 
@@ -109,20 +121,19 @@ export class ApiService {
      * Add new message
      * @param message Message to save
      */
-    addMessage(message: Message) {
+    addMessage(message: Message): Promise<number> {
         let url = `${environment.api}/conversations`;
         let body = new URLSearchParams();
         body.set('id_user', message.id_user.toString());
         body.set('id_conversation', message.id_conversation.toString());
         body.set('content', message.content);
-        body.set('timestamp', message.timestamp);
+        body.set('timestamp', integerToTimestamp(message.timestamp));
         return this.http.post(url, body.toString(),
             {
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).toPromise() as Promise<number>;
-        // TODO: delete from temp table and save in real one with the insert id
     }
 
 
@@ -133,11 +144,17 @@ export class ApiService {
         return this.storage.getUserId()
             .then((userId: number) => {
                 let url = `${environment.api}/participants?id_user=${userId}`;
-                return this.http.get(url).toPromise() as Promise<Participant[]>;
+                return this.storage.getParticipantSynchroTime()
+                    .then((timestamp: Date) => {
+                        if (timestamp) {
+                            let timestampString =
+                                integerToTimestamp(timestamp.getTime());
+                            url += `&timestamp=${timestampString}`;
+                        }
+                        return this.http.get(url).toPromise() as
+                            Promise<Participant[]>;
+                    });
             });
-        // TODO: save conversations in real database
-        // TODO: save last message synchronisation in database
-        // TODO: manage get with timestamp
     }
 
 
@@ -145,19 +162,18 @@ export class ApiService {
      * Add new participant
      * @param participant Participant to save
      */
-    addParticipant(participant: Participant) {
+    addParticipant(participant: Participant): Promise<any> {
         let url = `${environment.api}/participants`;
         let body = new URLSearchParams();
         body.set('id_user', participant.id_user.toString());
         body.set('id_conversation', participant.id_conversation.toString());
         body.set('nickname', participant.nickname);
-        body.set('timestamp', participant.timestamp);
+        body.set('timestamp', integerToTimestamp(participant.timestamp));
         return this.http.post(url, body.toString(),
             {
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             }).toPromise() as Promise<number>;
-        // TODO: delete from temp table and save in real one with the insert id
     }
 }

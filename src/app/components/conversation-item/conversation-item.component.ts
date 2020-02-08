@@ -25,6 +25,6 @@ export class ConversationItemComponent implements OnInit {
     // } else {
     //   return this.conversation.getLastMessage().author.name + ': ' + this.conversation.getLastMessage().content;
     // }
-    return 'coucou'
+    return 'coucou';
   }
 }

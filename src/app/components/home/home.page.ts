@@ -10,18 +10,12 @@ import {ConversationService} from "../../service/database/conversation.service";
 })
 export class HomePage implements OnInit {
 
-    conversations: Conversation[] = [];
-
-    constructor(private api: ApiService,
-                private conversationService: ConversationService) {
+    get conversations(): Conversation[] {
+        return ConversationService.conversations;
     }
 
-    ngOnInit(): void {
-        this.conversationService.getAll()
-            .then(result => {
-                for (let i=0; i<result.rows.length; i++)
-                this.conversations.push(result.rows.item(i));
-            })
-    }
+    constructor() {}
+
+    ngOnInit(): void {}
 
 }

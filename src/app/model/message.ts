@@ -26,5 +26,5 @@ export class Message {
     /**
      * Timestamp of the message
      */
-    timestamp: string;
+    timestamp: any;
 }

@@ -16,5 +16,5 @@ export class Conversation {
     /**
      * Timestamp of the creation of the conversation
      */
-    timestamp: string;
+    timestamp: any;
 }

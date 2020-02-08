@@ -21,5 +21,5 @@ export class Participant {
     /**
      * Timestamp when the user was added to the conversation
      */
-    timestamp: string;
+    timestamp: any;
 }

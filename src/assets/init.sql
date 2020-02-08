@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS participant (
     id_user INTEGER,
     id_conversation INTEGER,
     surname TEXT,
-    timestamp TEXT
+    timestamp INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS message (
@@ -32,14 +32,14 @@ CREATE TABLE IF NOT EXISTS message (
     id_conversation INTEGER,
     id_user INTEGER,
     content TEXT,
-    timestamp TEXT
+    timestamp INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS participant_temp (
     id_user INTEGER,
     id_conversation INTEGER,
     surname TEXT,
-    timestamp TEXT
+    timestamp INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS message_temp (
@@ -47,5 +47,5 @@ CREATE TABLE IF NOT EXISTS message_temp (
     id_conversation INTEGER,
     id_user INTEGER,
     content TEXT,
-    timestamp TEXT
+    timestamp INTEGER
 );

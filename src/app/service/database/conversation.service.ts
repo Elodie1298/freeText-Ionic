@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {DatabaseService} from './database.service';
 import {Conversation} from '../../model/conversation';
+import {rowsToList, timestampToInteger} from '../../app.const';
 
 @Injectable({
     providedIn: 'root'
@@ -10,29 +11,24 @@ import {Conversation} from '../../model/conversation';
  */
 export class ConversationService {
 
-    /**
-     * Recover all conversations stored
-     */
-    getAll(): Promise<Conversation[]> {
-        return DatabaseService.db.executeSql(
-            'SELECT * FROM conversation', []);
-    }
+    static conversations: Conversation[];
 
     /**
-     * Get a conversation from its id
-     * @param id_conversation
+     * Update conversation list
      */
-    get(id_conversation: number): Promise<Conversation[]> {
-        return DatabaseService.db.executeSql(
-            'SELECT * FROM conversation where id_conversation = ?',
-            [id_conversation]);
+    updateList(): void {
+        DatabaseService.db.executeSql(
+            'SELECT * FROM conversation', [])
+            .then(result => rowsToList(result.rows))
+            .then((conversations: Conversation[]) =>
+                ConversationService.conversations = conversations);
     }
 
     /**
      * Insert new conversation
      * @param conversation
      */
-    set(conversation: Conversation) {
+    set(conversation: Conversation): Promise<any> {
         return DatabaseService.db.executeSql(
             'SELECT * FROM conversation WHERE id_conversation = ?',
             [conversation.id_conversation])
@@ -42,7 +38,7 @@ export class ConversationService {
                         'INSERT INTO conversation (id_conversation, title,' +
                         ' timestamp) VALUES (?, ?, ?)',
                         [conversation.id_conversation, conversation.title,
-                            conversation.timestamp]);
+                            timestampToInteger(conversation.timestamp)]);
 
                 } else {
                     // TODO: handle title update

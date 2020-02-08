@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {DatabaseService} from './database.service';
 import {Message} from '../../model/message';
+import {integerToTimestamp, rowsToList} from '../../app.const';
 
 @Injectable({
     providedIn: 'root'
@@ -10,32 +11,32 @@ import {Message} from '../../model/message';
  */
 export class MessageService {
 
+    static messages: Message[];
+    static messagesTemp: Message[];
+
+    /**
+     * Update conversation lists
+     */
+    updateLists(): void {
+        DatabaseService.db.executeSql(
+            'select * from message_temp', [])
+            .then(result => rowsToList(result.rows))
+            .then((messages: Message[]) =>
+                MessageService.messagesTemp = messages);
+        DatabaseService.db.executeSql(
+            'select * from message', [])
+            .then(result => rowsToList(result.rows))
+            .then((messages: Message[]) =>
+                MessageService.messages = messages);
+    }
+
     /**
      * Get all messages stored in the temporary database
      */
     getAllTemp(): Promise<Message[]> {
         return DatabaseService.db.executeSql(
-            'select * from message_temp', []);
-    }
-
-    /**
-     * Get messages for a given conversation
-     * @param id_conversation
-     */
-    getForConversation(id_conversation: number): Promise<Message[]> {
-        return DatabaseService.db.executeSql(
-            'select * from message where id_conversation = ?',
-            [id_conversation]);
-    }
-
-    /**
-     * Get unsent messages for a given conversation
-     * @param id_conversation
-     */
-    getForConversationTemp(id_conversation: number): Promise<Message[]> {
-        return DatabaseService.db.executeSql(
-            'select * from message_temp where id_conversation = ?',
-            [id_conversation]);
+            'select * from message_temp', [])
+            .then(result => rowsToList(result.rows));
     }
 
     /**
@@ -50,12 +51,13 @@ export class MessageService {
             query = 'insert into message (id_message, id_conversation,' +
                 ' id_user, content, timestamp) values (?, ?, ?, ?, ?)';
             params = [message.id_message, message.id_conversation,
-                message.id_user, message.content, message.timestamp];
+                message.id_user, message.content,
+                integerToTimestamp(message.timestamp)];
         } else {
             query = 'insert into message_temp (id_conversation,' +
                 ' id_user, content, timestamp) values (?, ?, ?, ?, ?)';
             params = [message.id_conversation, message.id_user,
-                message.content, message.timestamp];
+                message.content, integerToTimestamp(message.timestamp)];
         }
         return DatabaseService.db.executeSql(query, params);
     }

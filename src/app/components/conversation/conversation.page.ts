@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {Conversation} from "../../model/conversation";
 import {ActivatedRoute, Params} from "@angular/router";
 import {NgModel} from "@angular/forms";
+import {ConversationService} from '../../service/database/conversation.service';
+import {Message} from '../../model/message';
+import {MessageService} from '../../service/database/message.service';
 
 @Component({
   selector: 'app-conversation',
@@ -12,14 +15,20 @@ export class ConversationPage implements OnInit {
 
   conversation: Conversation;
 
+  get messages(): Message[] {
+    return MessageService.messages;
+  };
+
   newMessage: NgModel;
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,
+              private conversationService: ConversationService,
+              private messageService: MessageService) { }
 
   ngOnInit() {
     this.route.params.subscribe((params: Params) => {
-      // TODO: redo
-      // this.conversation = Conversation.getConversation(parseInt(params.id, 10));
+      this.conversation = ConversationService.conversations
+          .filter(conv => conv.id_conversation === params.id)[0];
     });
   }
 
