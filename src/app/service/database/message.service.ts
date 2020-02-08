@@ -1,7 +1,11 @@
 import {Injectable} from '@angular/core';
 import {DatabaseService} from './database.service';
 import {Message} from '../../model/message';
-import {integerToTimestamp, rowsToList} from '../../app.const';
+import {
+    integerToTimestamp,
+    rowsToList,
+    timestampToInteger
+} from '../../app.const';
 
 @Injectable({
     providedIn: 'root'
@@ -52,7 +56,7 @@ export class MessageService {
                 ' id_user, content, timestamp) values (?, ?, ?, ?, ?)';
             params = [message.id_message, message.id_conversation,
                 message.id_user, message.content,
-                integerToTimestamp(message.timestamp)];
+                timestampToInteger(message.timestamp)];
             return DatabaseService.db.executeSql(
                 'select * from message where id_message = ?'
                 ,[message.id_message])
@@ -67,7 +71,7 @@ export class MessageService {
             query = 'insert into message_temp (id_conversation,' +
                 ' id_user, content, timestamp) values (?, ?, ?, ?, ?)';
             params = [message.id_conversation, message.id_user,
-                message.content, integerToTimestamp(message.timestamp)];
+                message.content, timestampToInteger(message.timestamp)];
             return DatabaseService.db.executeSql(query, params);
         }
     }

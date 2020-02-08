@@ -10,14 +10,14 @@ CREATE TABLE IF NOT EXISTS message (
     id_conversation INTEGER,
     id_user INTEGER,
     content TEXT,
-    timestamp TEXT,
+    timestamp INTEGER,
     synchronized NUMERIC
 );
 
 CREATE TABLE IF NOT EXISTS conversation (
     id_conversation INTEGER UNIQUE,
     title TEXT,
-    timestamp TEXT
+    timestamp INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS participant (

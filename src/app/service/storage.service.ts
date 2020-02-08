@@ -25,6 +25,7 @@ export class StorageService {
         return new Promise<any>(resolve => {
             this.getUserId()
                 .then((userId: number) => {
+                    console.log(userId);
                     resolve(isNullOrUndefined(userId));
                 });
         });
