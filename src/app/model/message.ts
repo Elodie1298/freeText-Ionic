@@ -27,4 +27,12 @@ export class Message {
      * Timestamp of the message
      */
     timestamp: any;
+
+
+    constructor(id_conversation: number, id_user: number, content: string, timestamp: any) {
+        this.id_conversation = id_conversation;
+        this.id_user = id_user;
+        this.content = content;
+        this.timestamp = timestamp;
+    }
 }

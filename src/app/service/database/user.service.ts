@@ -11,7 +11,7 @@ import {rowsToList} from '../../app.const';
  */
 export class UserService {
 
-    static users: User[];
+    static users: User[] = [];
 
     /**
      * Update user list
@@ -45,6 +45,8 @@ export class UserService {
                 if (result.rows.length > 0) {
                     return new Promise(resolve => resolve(true));
                 } else {
+                    UserService.users.push(user);
+                    console.log(UserService.users);
                     return DatabaseService.db.executeSql(
                         'insert into user (id_user, name, phone_number,' +
                         ' country_code) values (?, ?, ?, ?)',

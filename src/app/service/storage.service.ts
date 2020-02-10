@@ -94,6 +94,6 @@ export class StorageService {
      * Get the last participant synchronisation timestamp
      */
     getParticipantSynchroTime(): Promise<any> {
-        return this.storage.set('participantSynchroTime', new Date());
+        return this.storage.get('participantSynchroTime');
     }
 }

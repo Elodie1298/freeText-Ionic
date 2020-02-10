@@ -19,8 +19,6 @@ export class StartPage implements OnInit {
 
   /**
    * Name of the user
-   * TODO:
-   *  - update name in server database
    */
   name: FormControl;
 
@@ -50,12 +48,12 @@ export class StartPage implements OnInit {
    * Initialisation of the forms
    */
   ngOnInit(): void {
-    this.name = new FormControl('', [
+    this.name = new FormControl('Boubou', [
       Validators.required,
       Validators.minLength(4),
       Validators.maxLength(20)
     ]);
-    this.phoneNumber = new FormControl('', [
+    this.phoneNumber = new FormControl('0616203333', [
       Validators.required,
       Validators.pattern('[0-9]{10}')
     ]);

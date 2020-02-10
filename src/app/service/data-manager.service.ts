@@ -57,6 +57,20 @@ export class DataManagerService {
     }
 
     /**
+     * Send a message
+     * Add it to the temporary table and handle the post request to the server
+     * TODO:
+     *  - handle errors
+     * @param message
+     */
+    sendMessage(message: Message): void {
+        this.messageService.set(message)
+          .then(_ => this.synchroMessages())
+          .then(_ => console.log('sended')) // WIP
+          .catch(err => console.log(err));
+    }
+
+    /**
      * Do the synchronization between local and server for message table
      */
     synchroMessages(): Promise<any> {
@@ -109,7 +123,10 @@ export class DataManagerService {
                 this.saveParticipants(participants))
             .then(_ => this.api.getParticipants())
             .then((participants: Participant[]) =>
-                this.addParticipants(participants))
+                {
+                    console.log(participants);
+                    return this.addParticipants(participants);
+                })
             .then(_ => {
                 this.participantService.updateLists();
                 return this.storage.setParticipantSynchroTime();
@@ -180,6 +197,9 @@ export class DataManagerService {
         return this.userService.getMissingUsers()
             .then((usersId: { id_user: number }[]) => {
                 this.userService.updateList();
+                console.log(ParticipantService.participants);
+                console.log(UserService.users);
+                console.log(usersId);
                 return this.addUsers(usersId);
             });
     }

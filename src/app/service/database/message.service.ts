@@ -68,7 +68,7 @@ export class MessageService {
                 });
         } else {
             query = 'insert into message_temp (id_conversation,' +
-                ' id_user, content, timestamp) values (?, ?, ?, ?, ?)';
+                ' id_user, content, timestamp) values (?, ?, ?, ?)';
             params = [message.id_conversation, message.id_user,
                 message.content, timestampToInteger(message.timestamp)];
             return DatabaseService.db.executeSql(query, params);

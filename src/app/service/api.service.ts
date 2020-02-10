@@ -116,7 +116,7 @@ export class ApiService {
      * @param message Message to save
      */
     addMessage(message: Message): Promise<number> {
-        let url = `${environment.api}/conversations`;
+        let url = `${environment.api}/messages`;
         let body = new URLSearchParams();
         body.set('id_user', message.id_user.toString());
         body.set('id_conversation', message.id_conversation.toString());
@@ -139,9 +139,10 @@ export class ApiService {
             `${environment.api}/participants?id_user=${StorageService.userId}`;
         return this.storage.getParticipantSynchroTime()
             .then((timestamp: Date) => {
+                console.log(timestamp);
                 if (timestamp) {
                     let timestampString =
-                        integerToTimestamp(timestamp.getTime());
+                        integerToTimestamp(timestamp);
                     url += `&timestamp=${timestampString}`;
                 }
                 return this.http.get(url).toPromise() as
@@ -162,11 +163,13 @@ export class ApiService {
         body.set('id_conversation', participant.id_conversation.toString());
         body.set('nickname', participant.nickname);
         body.set('timestamp', integerToTimestamp(participant.timestamp));
-        return this.http.post(url, body.toString(),
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }).toPromise() as Promise<number>;
+        integerToTimestamp(participant.timestamp);
+        return new Promise<any>(resolve => resolve(true));
+        // return this.http.post(url, body.toString(),
+        //     {
+        //         headers: {
+        //             'Content-Type': 'application/x-www-form-urlencoded'
+        //         }
+        //     }).toPromise() as Promise<number>;
     }
 }
