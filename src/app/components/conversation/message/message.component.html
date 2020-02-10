@@ -1,9 +1,15 @@
-<ion-item lines="none" [class.user]="isUser">
+<ion-item lines="none"
+          (click)="details = !details"
+          [class.user]="isUser">
   <ion-avatar slot="start">
     <img [src]="avatar" alt="avatar">
   </ion-avatar>
   <ion-label>
     <p class="content"> {{ message.content }} </p>
-    <p class="metadata" *ngIf="author"> {{ author.name }} - {{ timestamp | date:'dd/LL/yyyy HH:mm' }} </p>
+    <p class="metadata"
+       [class.show]="details"
+       *ngIf="author">
+      {{ author.name }} - {{ timestamp | date:'dd/LL/yyyy HH:mm' }}
+    </p>
   </ion-label>
 </ion-item>

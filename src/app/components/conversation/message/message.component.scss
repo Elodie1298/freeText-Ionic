@@ -6,6 +6,7 @@ ion-item {
     width: 32px;
     height: 32px;
     top: 0;
+    margin: 0;
   }
 
   ion-label {
@@ -20,15 +21,24 @@ ion-item {
       border-radius: 8px;
       max-width: 80%;
     }
+
     .metadata {
       padding: 0 4px;
+      height: 0;
+      transition: 175ms cubic-bezier(.4,0,.2,1);
+    }
+
+    .metadata.show {
+      height: 20px;
     }
   }
 }
+
 ion-item.user {
   ion-avatar {
     display: none;
   }
+
   ion-label {
     align-items: flex-end;
   }

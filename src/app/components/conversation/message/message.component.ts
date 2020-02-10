@@ -20,6 +20,8 @@ export class MessageComponent implements OnInit {
 
     timestamp: Date;
 
+    details: boolean = false;
+
     ngOnInit() {
         this.timestamp = new Date(this.message.timestamp);
     }
