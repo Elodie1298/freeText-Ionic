@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {DatabaseService} from './database.service';
 import {Message} from '../../model/message';
 import {
-    integerToTimestamp,
     rowsToList,
     timestampToInteger
 } from '../../app.const';

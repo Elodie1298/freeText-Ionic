@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Conversation} from '../../../model/conversation';
 import {MessageService} from '../../../service/database/message.service';
 import {Message} from '../../../model/message';
@@ -6,21 +6,32 @@ import {StorageService} from '../../../service/storage.service';
 import {UserService} from '../../../service/database/user.service';
 import {User} from '../../../model/user';
 
+/**
+ * Conversation Item Component
+ * Show a conversation in the home page
+ */
 @Component({
     selector: 'app-conversation-item',
     templateUrl: './conversation-item.component.html',
     styleUrls: ['./conversation-item.component.scss'],
 })
-export class ConversationItemComponent implements OnInit {
+export class ConversationItemComponent {
 
+    /**
+     * Avatar of the conversation
+     * TODO:
+     *  - get it from server and/or user's avatar(s)
+     */
     avatar = 'assets/shapes.svg';
 
+    /**
+     * Conversation to show
+     */
     @Input() conversation: Conversation;
 
-    constructor() {}
-
-    ngOnInit() {}
-
+    /**
+     * Recover the content to show (last message and author)
+     */
     get content(): string {
         if (MessageService.messages) {
             let message = MessageService.messages

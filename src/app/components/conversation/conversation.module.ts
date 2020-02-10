@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { ConversationPageRoutingModule } from './conversation-routing.module';
 
 import { ConversationPage } from './conversation.page';
-import {MessageComponent} from "../message/message.component";
+import {MessageComponent} from "./message/message.component";
 
 @NgModule({
   imports: [

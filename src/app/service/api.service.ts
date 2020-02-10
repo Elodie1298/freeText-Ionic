@@ -6,7 +6,6 @@ import {Conversation} from '../model/conversation';
 import {StorageService} from './storage.service';
 import {Message} from '../model/message';
 import {Participant} from '../model/participant';
-import {timestamp} from 'rxjs/operators';
 import {integerToTimestamp} from '../app.const';
 
 @Injectable({
@@ -151,6 +150,7 @@ export class ApiService {
     }
 
 
+    // noinspection DuplicatedCode,DuplicatedCode
     /**
      * Add new participant
      * @param participant Participant to save

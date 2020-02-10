@@ -7,6 +7,10 @@ import {StorageService} from "./service/storage.service";
 import {DatabaseService} from "./service/database/database.service";
 import {DataManagerService} from './service/data-manager.service';
 
+/**
+ * App Component
+ * Main component - Handle the launch of the app
+ */
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
@@ -14,8 +18,16 @@ import {DataManagerService} from './service/data-manager.service';
 })
 export class AppComponent {
 
-    initialized = false;
-
+    /**
+     * Constructor of AppComponent
+     * @param platform
+     * @param splashScreen
+     * @param statusBar
+     * @param storageService
+     * @param navCtrl
+     * @param database
+     * @param dataManager
+     */
     constructor(private platform: Platform,
                 private splashScreen: SplashScreen,
                 private statusBar: StatusBar,
@@ -26,6 +38,9 @@ export class AppComponent {
         this.initializeApp();
     }
 
+    /**
+     * Initializations of all the components needed to run the app
+     */
     initializeApp() {
         this.platform.ready()
             .then(_ => this.database.init())
@@ -41,7 +56,6 @@ export class AppComponent {
             .then(_ => {
                 this.statusBar.styleDefault();
                 this.splashScreen.hide();
-                this.initialized = true;
             })
             .catch(error => console.log(error));
     }

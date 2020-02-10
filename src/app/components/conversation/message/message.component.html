@@ -4,6 +4,6 @@
   </ion-avatar>
   <ion-label>
     <p class="content"> {{ message.content }} </p>
-    <p class="metadata"> {{ author.name }} - {{ timestamp | date:'dd/LL/yyyy HH:mm' }} </p>
+    <p class="metadata" *ngIf="author"> {{ author.name }} - {{ timestamp | date:'dd/LL/yyyy HH:mm' }} </p>
   </ion-label>
 </ion-item>

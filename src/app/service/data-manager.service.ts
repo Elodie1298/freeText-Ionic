@@ -60,7 +60,6 @@ export class DataManagerService {
      * Do the synchronization between local and server for message table
      */
     synchroMessages(): Promise<any> {
-        console.log('synchro messages');
         return this.messageService.getAllTemp()
             .then((messages: Message[]) => this.saveMessages(messages))
             .then(_ => this.api.getMessages())
