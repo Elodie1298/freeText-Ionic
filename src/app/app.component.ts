@@ -50,7 +50,7 @@ export class AppComponent {
                     return new Promise(resolve => resolve(true));
                 } else {
                     this.dataManager.startSynchro();
-                    return this.navCtrl.navigateForward('/home', {animated: false});
+                    return this.navCtrl.navigateRoot('/home', {animated: false});
                 }
             })
             .then(_ => {

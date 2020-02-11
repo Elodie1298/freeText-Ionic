@@ -120,7 +120,8 @@ export class ApiService {
         let body = new URLSearchParams();
         body.set('id_user', message.id_user.toString());
         body.set('id_conversation', message.id_conversation.toString());
-        body.set('content', message.content);
+        body.set('content', message.content
+          .replace('\'', '\'\''));
         body.set('timestamp', integerToTimestamp(message.timestamp));
         return this.http.post(url, body.toString(),
             {
