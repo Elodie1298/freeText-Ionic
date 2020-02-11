@@ -15,6 +15,10 @@ const routes: Routes = [
     path: 'start',
     loadChildren: () => import('./components/start/start.module').then(m => m.StartPageModule)
   },
+  {
+    path: 'new-conversation',
+    loadChildren: () => import('./new-conversation/new-conversation.module').then( m => m.NewConversationPageModule)
+  },
 ];
 
 @NgModule({
