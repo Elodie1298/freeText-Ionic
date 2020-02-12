@@ -1,0 +1,11 @@
+ion-item {
+  ion-icon {
+    color: transparent;
+  }
+}
+ion-item.selected {
+  color: #3171e0;
+  ion-icon {
+    color: #3171e0;
+  }
+}

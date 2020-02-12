@@ -17,4 +17,10 @@ export class Conversation {
      * Timestamp of the creation of the conversation
      */
     timestamp: any;
+
+
+    constructor(title: string) {
+        this.title = title;
+        this.timestamp = new Date();
+    }
 }

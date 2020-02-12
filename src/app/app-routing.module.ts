@@ -17,7 +17,7 @@ const routes: Routes = [
   },
   {
     path: 'new-conversation',
-    loadChildren: () => import('./new-conversation/new-conversation.module').then( m => m.NewConversationPageModule)
+    loadChildren: () => import('./components/new-conversation/new-conversation.module').then(m => m.NewConversationPageModule)
   },
 ];
 

@@ -19,6 +19,6 @@ import {ConversationItemComponent} from "./conversation-item/conversation-item.c
       }
     ])
   ],
-    declarations: [HomePage, ConversationItemComponent]
+  declarations: [HomePage, ConversationItemComponent]
 })
 export class HomePageModule {}

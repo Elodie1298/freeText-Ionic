@@ -22,4 +22,11 @@ export class Participant {
      * Timestamp when the user was added to the conversation
      */
     timestamp: any;
+
+
+    constructor(id_user: number, id_conversation: number) {
+        this.id_user = id_user;
+        this.id_conversation = id_conversation;
+        this.timestamp = new Date();
+    }
 }
