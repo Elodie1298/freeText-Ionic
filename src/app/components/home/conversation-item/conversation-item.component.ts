@@ -5,6 +5,7 @@ import {Message} from '../../../model/message';
 import {StorageService} from '../../../service/storage.service';
 import {UserService} from '../../../service/database/user.service';
 import {User} from '../../../model/user';
+import {ConversationService} from '../../../service/database/conversation.service';
 
 /**
  * Conversation Item Component
@@ -50,5 +51,9 @@ export class ConversationItemComponent {
             return content;
         }
         return '';
+    }
+
+    get title(): string {
+        return ConversationService.getTitle(this.conversation.id_conversation);
     }
 }

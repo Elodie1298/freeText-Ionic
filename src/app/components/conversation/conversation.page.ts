@@ -8,6 +8,7 @@ import {MessageService} from '../../service/database/message.service';
 import {isNullOrUndefined} from 'util';
 import {StorageService} from '../../service/storage.service';
 import {DataManagerService} from '../../service/data-manager.service';
+import {ParticipantService} from '../../service/database/participant.service';
 
 /**
  * Conversation Page
@@ -33,6 +34,7 @@ export class ConversationPage implements OnInit {
   /**
    * Constructor of ConversationPage
    * @param route
+   * @param dataManager
    */
   constructor(private route: ActivatedRoute,
               private dataManager: DataManagerService) {
@@ -59,6 +61,10 @@ export class ConversationPage implements OnInit {
     } else {
       return null;
     }
+  }
+
+  get title(): string {
+    return ConversationService.getTitle(this.conversationId);
   }
 
   /**

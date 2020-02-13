@@ -46,7 +46,6 @@ export class UserService {
                     return new Promise(resolve => resolve(true));
                 } else {
                     UserService.users.push(user);
-                    console.log(UserService.users);
                     return DatabaseService.db.executeSql(
                         'insert into user (id_user, name, phone_number,' +
                         ' country_code) values (?, ?, ?, ?)',

@@ -1,20 +1,20 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {UserService} from '../../service/database/user.service';
-import {User} from '../../model/user';
-import {StorageService} from '../../service/storage.service';
+import {UserService} from '../../../service/database/user.service';
+import {User} from '../../../model/user';
+import {StorageService} from '../../../service/storage.service';
 import {
   LoadingController,
   ModalController,
   NavController
 } from '@ionic/angular';
-import {ConversationService} from '../../service/database/conversation.service';
-import {ParticipantService} from '../../service/database/participant.service';
-import {Participant} from '../../model/participant';
-import {Conversation} from '../../model/conversation';
+import {ConversationService} from '../../../service/database/conversation.service';
+import {ParticipantService} from '../../../service/database/participant.service';
+import {Participant} from '../../../model/participant';
+import {Conversation} from '../../../model/conversation';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ApiService} from '../../service/api.service';
-import {DataManagerService} from '../../service/data-manager.service';
+import {ApiService} from '../../../service/api.service';
+import {DataManagerService} from '../../../service/data-manager.service';
 
 @Component({
   selector: 'app-new-conversation',
@@ -70,6 +70,7 @@ export class NewConversationPage implements OnInit {
   constructor(private loadingController: LoadingController,
               private participantService: ParticipantService,
               private dataManager: DataManagerService,
+              private conversationService: ConversationService,
               private api: ApiService,
               private navCtrl: NavController,
               private modalCtrl: ModalController) {
@@ -109,6 +110,7 @@ export class NewConversationPage implements OnInit {
           newConversationUsersId.push(userId);
         }
       });
+    newConversationUsersId.push(StorageService.userId);
 
     // Check if this conversation already exists
     // If it does exists, navigate to it
@@ -122,9 +124,11 @@ export class NewConversationPage implements OnInit {
         new Conversation(this.title.value == "" ? null : this.title.value);
       this.api.addConversation(newConversation)
         .then((newConversationId: number) => {
+          console.log(newConversationId); //WIP
           conversationId = newConversationId;
-          this.addParticipants(newConversationUsersId, newConversationId);
+          return this.dataManager.synchroConversation();
         })
+        .then(_ => this.addParticipants(newConversationUsersId, conversationId))
         .then(_ => this.dataManager.synchroParticipants())
         .then(async _ => {
           await this.loading.dismiss();
@@ -133,8 +137,6 @@ export class NewConversationPage implements OnInit {
             .navigateForward(['conversation', conversationId]);
         })
     }
-
-    // WIP
   }
 
   addParticipants(usersId: number[], conversationId: number): Promise<any> {
@@ -158,11 +160,10 @@ export class NewConversationPage implements OnInit {
           let conversationParticipants = ParticipantService.participants
             .filter((participant: Participant) =>
               participant.id_conversation == conversation.id_conversation);
-          if (conversationParticipants.length == (usersId.length + 1)) {
+          if (conversationParticipants.length == usersId.length) {
             let allParticipantsInConversation = true;
             conversationParticipants.forEach((participant: Participant) => {
-              if (!(usersId.indexOf(participant.id_user) > -1 ||
-                participant.id_user == StorageService.userId)) {
+              if (usersId.indexOf(participant.id_user) == -1) {
                 allParticipantsInConversation = false;
               }
             });

@@ -2,7 +2,9 @@ import {Component} from '@angular/core';
 import {Conversation} from "../../model/conversation";
 import {ConversationService} from "../../service/database/conversation.service";
 import {ModalController} from '@ionic/angular';
-import {NewConversationPage} from '../new-conversation/new-conversation.page';
+import {NewConversationPage} from './new-conversation/new-conversation.page';
+import {MessageService} from '../../service/database/message.service';
+import {Message} from '../../model/message';
 
 /**
  * Home page - list of conversations
@@ -21,7 +23,17 @@ export class HomePage {
      * Getter for the conversation list
      */
     get conversations(): Conversation[] {
-        return ConversationService.conversations;
+        if (MessageService.messages) {
+            // Don't show conversation without any messages
+            return ConversationService.conversations
+              .filter((conversation: Conversation) =>
+                MessageService.messages
+                  .filter((message: Message) =>
+                    message.id_conversation == conversation.id_conversation)
+                  .length > 0);
+        } else {
+            return ConversationService.conversations;
+        }
     }
 
     /**

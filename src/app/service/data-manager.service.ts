@@ -40,13 +40,12 @@ export class DataManagerService {
      * Start and handle the synchronisation of the databases with the server
      */
     startSynchro(): void {
-        console.log('start synchro');
         this.synchroConversation()
             .then(_ => this.synchroMessages())
             .then(_ => this.synchroParticipants())
             .then(_ => this.synchroUser())
             .then(_ => {
-                console.log('end synchro');
+                console.log('----- APP READY -----');
             })
             .catch(err => console.log((err)));
         // TODO:
@@ -66,7 +65,6 @@ export class DataManagerService {
     sendMessage(message: Message): void {
         this.messageService.set(message)
           .then(_ => this.synchroMessages())
-          .then(_ => console.log('sended')) // WIP
           .catch(err => console.log(err));
     }
 
@@ -123,10 +121,7 @@ export class DataManagerService {
                 this.saveParticipants(participants))
             .then(_ => this.api.getParticipants())
             .then((participants: Participant[]) =>
-                {
-                    console.log(participants);
-                    return this.addParticipants(participants);
-                })
+              this.addParticipants(participants))
             .then(_ => {
                 this.participantService.updateLists();
                 return this.storage.setParticipantSynchroTime();
@@ -165,7 +160,7 @@ export class DataManagerService {
     /**
      * Do the synchronization between local and server for conversation table
      */
-    private synchroConversation(): Promise<any> {
+        synchroConversation(): Promise<any> {
         return this.api.getConversations()
             .then((conversations: Conversation[]) => {
                 return this.addConversations(conversations);
@@ -197,9 +192,6 @@ export class DataManagerService {
         return this.userService.getMissingUsers()
             .then((usersId: { id_user: number }[]) => {
                 this.userService.updateList();
-                console.log(ParticipantService.participants);
-                console.log(UserService.users);
-                console.log(usersId);
                 return this.addUsers(usersId);
             });
     }

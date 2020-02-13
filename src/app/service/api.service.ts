@@ -140,7 +140,6 @@ export class ApiService {
             `${environment.api}/participants?id_user=${StorageService.userId}`;
         return this.storage.getParticipantSynchroTime()
             .then((timestamp: Date) => {
-                console.log(timestamp);
                 if (timestamp) {
                     let timestampString =
                         integerToTimestamp(timestamp);
@@ -165,12 +164,11 @@ export class ApiService {
         body.set('nickname', participant.nickname);
         body.set('timestamp', integerToTimestamp(participant.timestamp));
         integerToTimestamp(participant.timestamp);
-        return new Promise<any>(resolve => resolve(true));
-        // return this.http.post(url, body.toString(),
-        //     {
-        //         headers: {
-        //             'Content-Type': 'application/x-www-form-urlencoded'
-        //         }
-        //     }).toPromise() as Promise<number>;
+        return this.http.post(url, body.toString(),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).toPromise() as Promise<number>;
     }
 }

@@ -12,8 +12,8 @@ import {HttpClientModule} from '@angular/common/http';
 import {IonicStorageModule} from '@ionic/storage';
 import {SQLite} from '@ionic-native/sqlite/ngx';
 import {SQLitePorter} from '@ionic-native/sqlite-porter/ngx';
-import {NewConversationPageModule} from './components/new-conversation/new-conversation.module';
-import {NewConversationPage} from './components/new-conversation/new-conversation.page';
+import {NewConversationPageModule} from './components/home/new-conversation/new-conversation.module';
+import {NewConversationPage} from './components/home/new-conversation/new-conversation.page';
 
 @NgModule({
   declarations: [AppComponent],
