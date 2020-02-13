@@ -6,6 +6,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import {StorageService} from "./service/storage.service";
 import {DatabaseService} from "./service/database/database.service";
 import {DataManagerService} from './service/data-manager.service';
+import {NotificationService} from './service/notification.service';
 
 /**
  * App Component
@@ -34,6 +35,7 @@ export class AppComponent {
                 private storageService: StorageService,
                 private navCtrl: NavController,
                 private database: DatabaseService,
+                private notification: NotificationService,
                 private dataManager: DataManagerService) {
         this.initializeApp();
     }
@@ -46,15 +48,18 @@ export class AppComponent {
             .then(_ => this.database.init())
             .then(_ => this.storageService.isFirstLaunch())
             .then((isFirstLaunch: boolean) => {
+                this.notification.setLocalNotification();
                 if (isFirstLaunch) {
                     return new Promise(resolve => resolve(true));
                 } else {
-                    this.dataManager.startSynchro();
-                    return this.navCtrl.navigateRoot('/home', {animated: false});
+                    return this.dataManager.startSynchro()
+                      .then(_ =>
+                        this.navCtrl.navigateRoot('/home',
+                          {animated: false}));
                 }
             })
             .then(_ => {
-                this.statusBar.styleDefault();
+                this.statusBar.styleBlackTranslucent();
                 this.splashScreen.hide();
             })
             .catch(error => console.log(error));

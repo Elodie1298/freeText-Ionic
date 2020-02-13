@@ -14,6 +14,7 @@ import {SQLite} from '@ionic-native/sqlite/ngx';
 import {SQLitePorter} from '@ionic-native/sqlite-porter/ngx';
 import {NewConversationPageModule} from './components/home/new-conversation/new-conversation.module';
 import {NewConversationPage} from './components/home/new-conversation/new-conversation.page';
+import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,7 +34,8 @@ import {NewConversationPage} from './components/home/new-conversation/new-conver
     SplashScreen,
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     SQLite,
-    SQLitePorter
+    SQLitePorter,
+    LocalNotifications
   ],
   bootstrap: [AppComponent]
 })
