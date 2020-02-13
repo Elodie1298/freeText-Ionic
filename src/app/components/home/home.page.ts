@@ -5,6 +5,7 @@ import {ModalController} from '@ionic/angular';
 import {NewConversationPage} from './new-conversation/new-conversation.page';
 import {MessageService} from '../../service/database/message.service';
 import {Message} from '../../model/message';
+import {DataManagerService} from '../../service/data-manager.service';
 
 /**
  * Home page - list of conversations
@@ -16,7 +17,8 @@ import {Message} from '../../model/message';
 })
 export class HomePage {
 
-    constructor(private modalCtrl: ModalController) {
+    constructor(private modalCtrl: ModalController,
+                private dataManager: DataManagerService) {
     }
 
     /**
@@ -44,5 +46,14 @@ export class HomePage {
             component: NewConversationPage
         });
         await modal.present();
+    }
+
+    /**
+     * Refresh the conversation list
+     * @param event
+     */
+    doRefresh(event: any): void {
+        this.dataManager.startSynchro()
+          .then(_ => event.target.complete());
     }
 }

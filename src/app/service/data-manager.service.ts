@@ -39,8 +39,8 @@ export class DataManagerService {
     /**
      * Start and handle the synchronisation of the databases with the server
      */
-    startSynchro(): void {
-        this.synchroConversation()
+    startSynchro(): Promise<any> {
+        return this.synchroConversation()
             .then(_ => this.synchroMessages())
             .then(_ => this.synchroParticipants())
             .then(_ => this.synchroUser())
