@@ -7,8 +7,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="conversation">
-  <ion-list>
+<ion-content id="content">
+  <ion-list *ngIf="conversation">
     <app-message
             *ngFor="let message of messages"
             [message]="message"

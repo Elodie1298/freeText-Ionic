@@ -8,6 +8,8 @@ import {MessageService} from '../../service/database/message.service';
 import {isNullOrUndefined} from 'util';
 import {StorageService} from '../../service/storage.service';
 import {DataManagerService} from '../../service/data-manager.service';
+import {NotificationService} from '../../service/notification.service';
+import * as $ from 'jquery';
 
 /**
  * Conversation Page
@@ -31,11 +33,18 @@ export class ConversationPage implements OnInit {
   newMessage: NgModel;
 
   /**
+   * View on the ion-content div to manage the scroll
+   */
+  content;
+
+  /**
    * Constructor of ConversationPage
    * @param route
+   * @param notification
    * @param dataManager
    */
   constructor(private route: ActivatedRoute,
+              private notification: NotificationService,
               private dataManager: DataManagerService) {
   }
 
@@ -44,9 +53,21 @@ export class ConversationPage implements OnInit {
    * Recover the conversation id
    */
   ngOnInit(): void {
+    this.content = $('#content')[0];
+    console.log(this.content);
+    this.scrollToBottom();
     this.route.params.subscribe((params: Params) => {
       this.conversationId = params.id;
+      this.notification.unreadMessages.set(this.conversationId, 0);
     });
+  }
+
+  /**
+   * Scroll to the bottom of the conversation
+   */
+  scrollToBottom(): void {
+    this.content.scrollToBottom()
+      .catch(err => console.log(err));
   }
 
   /**

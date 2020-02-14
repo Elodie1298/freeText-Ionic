@@ -27,7 +27,7 @@ export class HomePage {
   }
 
   /**
-   * Getter for the conversation list
+   * Get the list of conversation containing messages and sorted
    * @return the list of all conversations
    */
   get conversations(): Conversation[] {
@@ -38,11 +38,27 @@ export class HomePage {
           MessageService.messages
             .filter((message: Message) =>
               message.id_conversation == conversation.id_conversation)
-            .length > 0);
+            .length > 0)
+        .sort((a: Conversation, b: Conversation) =>
+        new Date(this.getLastMessage(b).timestamp).getTime() -
+        new Date(this.getLastMessage(a).timestamp).getTime());
     } else {
-      return ConversationService.conversations;
+      return ConversationService.conversations
     }
   }
+
+  /**
+   * Recover the last message for a conversation
+   * @param conversation
+   */
+  getLastMessage(conversation: Conversation): Message {
+    return MessageService.messages
+      .filter((message: Message) =>
+        message.id_conversation == conversation.id_conversation)
+      .sort((mA: Message, mB: Message) =>
+        new Date(mB.timestamp).getTime()-new Date(mA.timestamp).getTime())[0];
+  }
+
 
   /**
    * Open the modal to create a new conversation

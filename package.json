@@ -38,6 +38,7 @@
     "cordova-sqlite-storage": "^4.0.0",
     "core-js": "^2.5.4",
     "de.appplant.cordova.plugin.local-notification": "^0.8.5",
+    "jquery": "^3.4.1",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
     "uk.co.workingedge.cordova.plugin.sqliteporter": "^1.1.1",

@@ -6,6 +6,7 @@ import {StorageService} from '../../../service/storage.service';
 import {UserService} from '../../../service/database/user.service';
 import {User} from '../../../model/user';
 import {ConversationService} from '../../../service/database/conversation.service';
+import {NotificationService} from '../../../service/notification.service';
 
 /**
  * Conversation Item Component
@@ -31,6 +32,13 @@ export class ConversationItemComponent {
     @Input() conversation: Conversation;
 
     /**
+     * Constructor of ConversationItemComponent
+     * @param notification
+     */
+    constructor(private notification: NotificationService) {
+    }
+
+    /**
      * Recover the content to show (last message and author)
      */
     get content(): string {
@@ -53,7 +61,19 @@ export class ConversationItemComponent {
         return '';
     }
 
+    /**
+     * Title of the conversation
+     */
     get title(): string {
         return ConversationService.getTitle(this.conversation.id_conversation);
+    }
+
+    /**
+     * Number of unread messages for the conversation
+     */
+    get nbNotifications(): number {
+        let nbUnread =  this.notification.unreadMessages
+          .get(this.conversation.id_conversation);
+        return nbUnread;
     }
 }

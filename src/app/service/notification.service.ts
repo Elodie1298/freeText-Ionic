@@ -68,10 +68,12 @@ export class NotificationService {
    */
   addNotification(message: Message): void {
     this.stack.push(message.id_message);
-    this.unreadMessages.set(
-      message.id_conversation,
-      message.id_message
-    );
+    let nbUnread = this.unreadMessages.get(message.id_conversation);
+    if (nbUnread && nbUnread > 0) {
+      this.unreadMessages.set(message.id_conversation, nbUnread + 1);
+    } else {
+      this.unreadMessages.set(message.id_conversation, 1);
+    }
   }
 
   /**
