@@ -57,7 +57,7 @@ export class ConversationPage implements OnInit {
     this.scrollToBottom();
     this.route.params.subscribe((params: Params) => {
       this.conversationId = parseInt(params.id, 10);
-      this.notification.unreadMessages.set(this.conversationId, 0);
+      this.notification.removeNotification(this.conversationId);
     });
   }
 

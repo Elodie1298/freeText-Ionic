@@ -30,7 +30,7 @@ export class NotificationService {
   /**
    * Stack of messages id
    */
-  stack: number[] = [];
+  stack: Message[] = [];
 
   /**
    * Map linking conversation's id to the new message's id for the notification badges on the home page
@@ -67,7 +67,7 @@ export class NotificationService {
    * @param message
    */
   addNotification(message: Message): void {
-    this.stack.push(message.id_message);
+    this.stack.push(message);
     let nbUnread = this.unreadMessages.get(message.id_conversation);
     if (nbUnread && nbUnread > 0) {
       this.unreadMessages.set(message.id_conversation, nbUnread + 1);
@@ -77,12 +77,21 @@ export class NotificationService {
   }
 
   /**
+   * Remove a notification
+   * @param conversationId
+   */
+  removeNotification(conversationId) {
+    this.stack = this.stack.filter((m: Message) => m.id_conversation != conversationId);
+    this.unreadMessages.delete(conversationId);
+  }
+
+  /**
    * Send multiple notifications
    */
   async sendNotifications() {
     if (this.stack.length > 0) {
-      let messageId = this.stack.pop();
-      await this.sendNotification(messageId);
+      let message = this.stack.pop();
+      await this.sendNotification(message.id_message);
       await this.sendNotifications();
     }
   }
