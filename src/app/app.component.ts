@@ -7,6 +7,7 @@ import {StorageService} from './service/storage.service';
 import {DatabaseService} from './service/database/database.service';
 import {DataManagerService} from './service/data-manager.service';
 import {NotificationService} from './service/notification.service';
+import {error} from 'util';
 
 /**
  * App Component
@@ -38,23 +39,34 @@ export class AppComponent {
               private database: DatabaseService,
               private notification: NotificationService,
               private dataManager: DataManagerService) {
-    this.initializeApp()
-      .catch(error => console.log(error));
+    this.initializeApp();
   }
 
   /**
    * Initializations of all the components needed to run the app
    */
-  async initializeApp() {
-    await this.platform.ready();
-    await this.database.init();
-    let isFirstLaunch = await this.storageService.isFirstLaunch();
-    this.notification.setLocalNotification();
-    if (!isFirstLaunch) {
-      await this.dataManager.startSynchro();
-      await this.navCtrl.navigateRoot('/home', {animated: false});
-    }
-    this.statusBar.styleBlackTranslucent();
-    this.splashScreen.hide();
+  initializeApp() {
+    this.platform.ready()
+      .then(_ => this.database.init())
+      .then(_ => this.storageService.isFirstLaunch())
+      .then((isFirstLaunch: boolean) => {
+        this.notification.setLocalNotification();
+        if (!isFirstLaunch) {
+          return this.dataManager.startSynchro()
+            .then(_ => this.navCtrl.navigateRoot('/home', {animated: false}))
+            .catch(error => {
+              console.log(error);
+              return this.navCtrl.navigateRoot('/home', {animated: false});
+          });
+        } else {
+          return new Promise(resolve => resolve(true));
+        }
+      })
+      .then(_ => {
+        console.log('----- APP READY -----');
+        this.statusBar.styleBlackTranslucent();
+        this.splashScreen.hide();
+      })
+      .catch(error => console.log(error));
   }
 }

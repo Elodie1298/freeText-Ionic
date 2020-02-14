@@ -7,6 +7,7 @@ import {StorageService} from './storage.service';
 import {Message} from '../model/message';
 import {Participant} from '../model/participant';
 import {integerToTimestamp} from '../app.const';
+import {timeout} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,11 @@ import {integerToTimestamp} from '../app.const';
  * Service that connect to APi endpoints
  */
 export class ApiService {
+
+  /**
+   * Timeout for the http requests
+   */
+  timeout = 2000;
 
   /**
    * Constructor of ApiService
@@ -41,7 +47,9 @@ export class ApiService {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      }).toPromise() as Promise<{ id_user: number }>;
+      })
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<{ id_user: number }>;
   }
 
 
@@ -51,7 +59,9 @@ export class ApiService {
    */
   getUser(id_user: number): Promise<User[]> {
     let url = `${environment.api}/user?id_user=${id_user}`;
-    return this.http.get(url).toPromise() as Promise<User[]>;
+    return this.http.get(url)
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<User[]>;
   }
 
 
@@ -65,7 +75,9 @@ export class ApiService {
       let timestampString = integerToTimestamp(new Date(timestamp).getTime());
       url += `&timestamp=${timestampString}`;
     }
-    return this.http.get(url).toPromise() as Promise<Conversation[]>;
+    return this.http.get(url)
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<Conversation[]>;
   }
 
 
@@ -83,7 +95,9 @@ export class ApiService {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      }).toPromise() as Promise<number>;
+      })
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<number>;
   }
 
 
@@ -97,7 +111,9 @@ export class ApiService {
       let timestampString = integerToTimestamp(new Date(timestamp).getTime());
       url += `&timestamp=${timestampString}`;
     }
-    return this.http.get(url).toPromise() as Promise<Message[]>;
+    return this.http.get(url)
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<Message[]>;
   }
 
 
@@ -118,7 +134,9 @@ export class ApiService {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      }).toPromise() as Promise<number>;
+      })
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<number>;
   }
 
 
@@ -132,7 +150,9 @@ export class ApiService {
       let timestampString = integerToTimestamp(timestamp);
       url += `&timestamp=${timestampString}`;
     }
-    return this.http.get(url).toPromise() as Promise<Participant[]>;
+    return this.http.get(url)
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<Participant[]>;
   }
 
 
@@ -154,6 +174,8 @@ export class ApiService {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      }).toPromise() as Promise<number>;
+      })
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<number>;
   }
 }

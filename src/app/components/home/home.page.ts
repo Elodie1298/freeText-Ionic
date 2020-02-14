@@ -1,11 +1,12 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Conversation} from '../../model/conversation';
 import {ConversationService} from '../../service/database/conversation.service';
-import {ModalController} from '@ionic/angular';
+import {ModalController, ToastController} from '@ionic/angular';
 import {NewConversationPage} from './new-conversation/new-conversation.page';
 import {MessageService} from '../../service/database/message.service';
 import {Message} from '../../model/message';
 import {DataManagerService} from '../../service/data-manager.service';
+import {UserService} from '../../service/database/user.service';
 
 /**
  * Home page - list of conversations
@@ -15,17 +16,35 @@ import {DataManagerService} from '../../service/data-manager.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
+
+  /**
+   * Toast to show connection errors
+   */
+  toast: HTMLIonToastElement;
 
   /**
    * Constructor of HomePage
    * @param modalCtrl
+   * @param toastCtrl
    * @param dataManager
    */
   constructor(private modalCtrl: ModalController,
+              private toastCtrl: ToastController,
               private dataManager: DataManagerService) {
   }
 
+  /**
+   * Initialisation of the application
+   */
+  ngOnInit(): void {
+    this.toastCtrl.create({
+      message: 'The application could not connect to the server.',
+      color: 'danger',
+      duration: 6000
+    })
+      .then((toast: HTMLIonToastElement) => this.toast = toast);
+  }
   /**
    * Get the list of conversation containing messages and sorted
    * @return the list of all conversations
@@ -74,8 +93,14 @@ export class HomePage {
    * Refresh the conversation list
    * @param event Trigger of the refresh
    */
-  async doRefresh(event: any) {
-    await this.dataManager.startSynchro();
-    event.target.complete();
+  doRefresh(event: any) {
+    this.dataManager.startSynchro()
+      .then(_ => event.target.complete())
+      .catch(error => {
+        console.log(error);
+        event.target.complete();
+        this.toast.present()
+          .catch(error => console.error(error));
+      });
   }
 }

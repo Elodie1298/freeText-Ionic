@@ -87,7 +87,7 @@ export class StartPage implements OnInit {
           console.error(error);
           this.isConnecting = false;
           this.connectionError = true;
-          setTimeout(_ => this.connectionError = false, 7000);
+          setTimeout(_ => this.connectionError = false, 6000);
         });
     }
   }

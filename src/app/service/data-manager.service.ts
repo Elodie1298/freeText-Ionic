@@ -9,6 +9,7 @@ import {Message} from '../model/message';
 import {Participant} from '../model/participant';
 import {Conversation} from '../model/conversation';
 import {NotificationService} from './notification.service';
+import {User} from '../model/user';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,11 @@ import {NotificationService} from './notification.service';
  * between local and server databases
  */
 export class DataManagerService {
+
+  /**
+   * Save error during execution
+   */
+  errors: any[];
 
   /**
    * Constructor of DataManagerService
@@ -42,17 +48,19 @@ export class DataManagerService {
    * Start and handle the synchronisation of the databases with the server
    */
   async startSynchro() {
+    this.errors = [];
     await this.synchroConversation();
     await this.synchroMessages();
     await this.synchroParticipants();
     await this.synchroUser();
+
     await this.notification.sendNotifications();
-    console.log('----- APP READY -----');
+
+    if (this.errors.length > 0) {
+      throw Error('Error connecting to the server');
+    }
     // TODO:
     //  - do the synchronization regularly
-    //  - if there is a network error:
-    //      - watch the network status
-    //      - wait to have internet connection and retry
   }
 
   /**
@@ -68,13 +76,21 @@ export class DataManagerService {
   /**
    * Do the synchronization between local and server for message table
    */
-  async synchroMessages() {
-    let messagesTemp = await this.messageService.getAllTemp();
-    await this.saveMessages(messagesTemp);
-    let messages = await this.api.getMessages();
-    await this.addMessages(messages);
-    await this.messageService.updateLists();
-    await this.storage.setMessageSynchroTime();
+  synchroMessages() {
+    if (this.errors.length > 0) {
+      return this.messageService.updateLists();
+    } else {
+      return this.messageService.getAllTemp()
+        .then((m: Message[]) => this.saveMessages(m))
+        .then(_ => this.api.getMessages())
+        .then((m: Message[]) => this.addMessages(m))
+        .then(_ => this.storage.setMessageSynchroTime())
+        .then(_ => this.messageService.updateLists())
+        .catch(error => {
+          this.errors.push(error);
+          return this.messageService.updateLists();
+        });
+    }
   }
 
   /**
@@ -105,13 +121,25 @@ export class DataManagerService {
   /**
    * Do the synchronization between local and server for participant table
    */
-  async synchroParticipants(): Promise<any> {
-    let participants = await this.participantService.getAllTemp();
-    await this.saveParticipants(participants);
-    participants = await this.api.getParticipants();
-    await this.addParticipants(participants);
-    await this.participantService.updateLists();
-    await this.storage.setParticipantSynchroTime();
+  synchroParticipants(): Promise<any> {
+    if (this.errors.length > 0) {
+      return this.messageService.updateLists();
+    } else {
+      return this.participantService.getAllTemp()
+        .then((m: Participant[]) => this.saveParticipants(m))
+        .then(_ => this.api.getParticipants())
+        .catch(error => {
+          this.errors.push(error);
+          return this.api.getParticipants();
+        })
+        .then((m: Participant[]) => this.addParticipants(m))
+        .then(_ => this.storage.setParticipantSynchroTime())
+        .then(_ => this.participantService.updateLists())
+        .catch(error => {
+          this.errors.push(error);
+          return this.participantService.updateLists();
+        });
+    }
   }
 
   /**
@@ -142,11 +170,15 @@ export class DataManagerService {
   /**
    * Do the synchronization between local and server for conversation table
    */
-  async synchroConversation(): Promise<any> {
-    let conversations = await this.api.getConversations();
-    await this.addConversations(conversations);
-    await this.conversationService.updateList();
-    await this.storage.setConversationSynchroTime();
+  synchroConversation(): Promise<any> {
+    return this.api.getConversations()
+      .then((c: Conversation[]) => this.addConversations(c))
+      .then(_ => this.storage.setConversationSynchroTime())
+      .then(_ => this.conversationService.updateList())
+      .catch(error => {
+        this.errors.push(error);
+        return this.conversationService.updateList();
+      });
   }
 
   /**
@@ -164,10 +196,18 @@ export class DataManagerService {
   /**
    * Do the synchronization between local and server for the user table
    */
-  private async synchroUser(): Promise<any> {
-    let usersId = await this.userService.getMissingUsers();
-    await this.userService.updateList();
-    await this.addUsers(usersId);
+  private synchroUser(): Promise<any> {
+    if (this.errors.length > 0) {
+      return this.userService.updateList();
+    } else {
+      return this.userService.getMissingUsers()
+        .then((u: User[]) => this.addUsers(u))
+        .then(_ => this.userService.updateList())
+        .catch(error => {
+          this.errors.push(error);
+          return this.userService.updateList();
+        });
+    }
   }
 
   /**
