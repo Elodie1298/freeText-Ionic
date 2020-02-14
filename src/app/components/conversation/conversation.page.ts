@@ -54,10 +54,9 @@ export class ConversationPage implements OnInit {
    */
   ngOnInit(): void {
     this.content = $('#content')[0];
-    console.log(this.content);
     this.scrollToBottom();
     this.route.params.subscribe((params: Params) => {
-      this.conversationId = params.id;
+      this.conversationId = parseInt(params.id, 10);
       this.notification.unreadMessages.set(this.conversationId, 0);
     });
   }
