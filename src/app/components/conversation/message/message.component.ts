@@ -25,6 +25,11 @@ export class MessageComponent implements OnInit {
     @Input() message: Message;
 
     /**
+     * Is the message a temporary one (not sent)
+     */
+    @Input() temp: boolean;
+
+    /**
      * Timestamp of the message
      */
     timestamp: Date;

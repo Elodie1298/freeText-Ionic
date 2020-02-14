@@ -13,6 +13,11 @@
             *ngFor="let message of messages"
             [message]="message"
     ></app-message>
+    <app-message
+            *ngFor="let message of tempMessages"
+            [message]="message"
+            [temp]="true"
+    ></app-message>
   </ion-list>
 </ion-content>
 

@@ -5,7 +5,10 @@
     <img [src]="avatar" alt="avatar">
   </ion-avatar>
   <ion-label>
-    <p class="content"> {{ message.content }} </p>
+    <p class="content">
+      {{ message.content }}
+      <ion-spinner name="dots" *ngIf="temp"></ion-spinner>
+    </p>
     <p class="metadata"
        [class.show]="details"
        *ngIf="author">

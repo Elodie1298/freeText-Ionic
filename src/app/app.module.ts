@@ -15,6 +15,7 @@ import {SQLitePorter} from '@ionic-native/sqlite-porter/ngx';
 import {NewConversationPageModule} from './components/home/new-conversation/new-conversation.module';
 import {NewConversationPage} from './components/home/new-conversation/new-conversation.page';
 import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
+import {Keyboard} from '@ionic-native/keyboard/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,7 +36,8 @@ import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
     {provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     SQLite,
     SQLitePorter,
-    LocalNotifications
+    LocalNotifications,
+    Keyboard
   ],
   bootstrap: [AppComponent]
 })

@@ -10,6 +10,7 @@ import {StorageService} from '../../service/storage.service';
 import {DataManagerService} from '../../service/data-manager.service';
 import {NotificationService} from '../../service/notification.service';
 import * as $ from 'jquery';
+import {Keyboard} from '@ionic-native/keyboard/ngx';
 
 /**
  * Conversation Page
@@ -45,6 +46,7 @@ export class ConversationPage implements OnInit {
    */
   constructor(private route: ActivatedRoute,
               private notification: NotificationService,
+              private keyboard: Keyboard,
               private dataManager: DataManagerService) {
   }
 
@@ -101,12 +103,24 @@ export class ConversationPage implements OnInit {
     }
   };
 
+  get tempMessages(): Message[] {
+    if (this.conversationId && MessageService.messagesTemp) {
+      return MessageService.messagesTemp
+        .filter((m: Message) =>
+          m.id_conversation == this.conversationId)
+        .sort((a: Message, b: Message) =>
+          a.timestamp - b.timestamp);
+    } else {
+      return null;
+    }
+  }
+
   /**
    * Send a new message
    */
   sendMessage(): void {
-    // TODO: redo
-    //  - error messages
+    this.keyboard.hide();
+    this.scrollToBottom();
     if (!isNullOrUndefined(this.newMessage) &&
       this.newMessage.toString() !== '') {
       let message = new Message(this.conversationId, StorageService.userId,
