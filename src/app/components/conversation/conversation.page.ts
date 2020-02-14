@@ -8,7 +8,6 @@ import {MessageService} from '../../service/database/message.service';
 import {isNullOrUndefined} from 'util';
 import {StorageService} from '../../service/storage.service';
 import {DataManagerService} from '../../service/data-manager.service';
-import {ParticipantService} from '../../service/database/participant.service';
 
 /**
  * Conversation Page
@@ -87,15 +86,13 @@ export class ConversationPage implements OnInit {
    */
   sendMessage(): void {
     // TODO: redo
-    //  - put it in the temporary table
-    //  - launch synchroMessages
     //  - error messages
     if (!isNullOrUndefined(this.newMessage) &&
       this.newMessage.toString() !== '') {
       let message = new Message(this.conversationId, StorageService.userId,
         this.newMessage.toString(), new Date());
-      console.log(message); // WIP
-      this.dataManager.sendMessage(message);
+      this.dataManager.sendMessage(message)
+        .catch(err => console.log(err));
       this.newMessage = null;
     }
   }

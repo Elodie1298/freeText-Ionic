@@ -14,18 +14,36 @@ import {UserService} from '../../../service/database/user.service';
 })
 export class MessageComponent implements OnInit {
 
+    /**
+     * Avatar of the user
+     */
     avatar = 'assets/shapes.svg';
 
+    /**
+     * Message to show
+     */
     @Input() message: Message;
 
+    /**
+     * Timestamp of the message
+     */
     timestamp: Date;
 
+    /**
+     * Are the details shown
+     */
     details: boolean = false;
 
+    /**
+     * Initialisation of the component
+     */
     ngOnInit() {
         this.timestamp = new Date(this.message.timestamp);
     }
 
+    /**
+     * Name of the author of the message
+     */
     get author(): User {
         if (UserService.users) {
             return UserService.users
@@ -35,6 +53,9 @@ export class MessageComponent implements OnInit {
         }
     }
 
+    /**
+     * Is the logged user the author
+     */
     get isUser(): boolean {
         if (this.author) {
             return this.author.id_user == StorageService.userId;

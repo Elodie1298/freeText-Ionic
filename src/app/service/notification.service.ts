@@ -12,10 +12,19 @@ import {Message} from '../model/message';
 @Injectable({
   providedIn: 'root'
 })
+/**
+ * Service that handle the notifications
+ */
 export class NotificationService {
 
+  /**
+   * Are the notifications part of a group
+   */
   groupSummary: boolean = false;
 
+  /**
+   * Name of the group
+   */
   group = 'freeText';
 
   /**
@@ -28,17 +37,26 @@ export class NotificationService {
    */
   unreadMessages = new Map<number, number>();
 
+  /**
+   * Plugin to handle notifications
+   */
   localNotification;
 
+  /**
+   * Id of the next notification
+   */
   private _nextNotificationId = 0;
   get nextNotificationId(): number {
     return this._nextNotificationId++;
   }
 
+  /**
+   * Set the plugin and assure to have the permission
+   */
   setLocalNotification() {
     // @ts-ignore
     this.localNotification = cordova.plugins.notification.local;
-    console.log(this.localNotification);
+    // noinspection JSIgnoredPromiseFromCall
     this.localNotification.hasPermission(
       (permission: boolean) => permission ? null :
         this.localNotification.requestPermission());
@@ -46,7 +64,7 @@ export class NotificationService {
 
   /**
    * Add a notification to the stack
-   * @param messageId
+   * @param message
    */
   addNotification(message: Message): void {
     this.stack.push(message.id_message);
@@ -67,6 +85,10 @@ export class NotificationService {
     }
   }
 
+  /**
+   * Send a notification to the device
+   * @param messageId
+   */
   async sendNotification(messageId: number) {
     let conversationId = await this.isNotificationForConversation(messageId);
     if (conversationId > -1) {
@@ -119,8 +141,8 @@ export class NotificationService {
   isNotificationForConversation(messageId: number): Promise<number> {
     return this.localNotification.getAllScheduled(
       (notifications: ILocalNotification[]) => {
-        let conversationId: number;
-        let conversationNotifications = notifications
+        let conversationId: number = -1;
+        notifications
           .filter((notification: ILocalNotification) => {
             let conversations = ConversationService.conversations
               .filter((conversation: Conversation) =>
@@ -132,7 +154,7 @@ export class NotificationService {
             }
             return conversations.length > 0;
           });
-        return conversationNotifications.length > 0 ? conversationId : -1;
+        return conversationId;
       });
   }
 

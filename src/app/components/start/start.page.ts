@@ -62,18 +62,13 @@ export class StartPage implements OnInit {
   /**
    * Send the user information to log him in and access the application
    */
-  send(): void {
+  async send() {
     if (isNullOrUndefined(this.name.errors) &&
       isNullOrUndefined(this.phoneNumber.errors)) {
-      this.api.login(this.name.value, this.phoneNumber.value)
-        .then(res => {
-          this.storage.setUserId(res.id_user)
-            .then(_ => this.dataManager.startSynchro())
-            .catch(err => console.log(err));
-          this.navCtrl.navigateForward('/home')
-            .catch(err => console.log(err));
-        })
-        .catch(err => console.log(err));
+      let user = await this.api.login(this.name.value, this.phoneNumber.value);
+      await this.storage.setUserId(user.id_user);
+      await this.dataManager.startSynchro();
+      await this.navCtrl.navigateForward('/home');
     } else {
       //TODO:
       // - handle error

@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
 import {UserService} from '../../../service/database/user.service';
 import {User} from '../../../model/user';
 import {StorageService} from '../../../service/storage.service';
@@ -12,21 +11,18 @@ import {ConversationService} from '../../../service/database/conversation.servic
 import {ParticipantService} from '../../../service/database/participant.service';
 import {Participant} from '../../../model/participant';
 import {Conversation} from '../../../model/conversation';
-import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../../../service/api.service';
 import {DataManagerService} from '../../../service/data-manager.service';
 
+/**
+ * Modal to create a new conversation
+ */
 @Component({
   selector: 'app-new-conversation',
   templateUrl: './new-conversation.page.html',
   styleUrls: ['./new-conversation.page.scss'],
 })
 export class NewConversationPage implements OnInit {
-
-  /**
-   * Title of the conversation
-   */
-  title: FormControl;
 
   /**
    * Search value
@@ -44,6 +40,10 @@ export class NewConversationPage implements OnInit {
    */
   loading: HTMLIonLoadingElement;
 
+  /**
+   * Users
+   * @return List containing all of the known users and matching the query
+   */
   get users(): User[] {
     if (UserService.users) {
       return UserService.users
@@ -57,6 +57,10 @@ export class NewConversationPage implements OnInit {
     }
   }
 
+  /**
+   * Tell if a user at least is selected
+   * If so, a conversation can be created
+   */
   get isUsersSelected(): boolean {
     let returnValue = false;
     this.selectedUsers.forEach((v: boolean) => {
@@ -67,6 +71,16 @@ export class NewConversationPage implements OnInit {
     return returnValue;
   }
 
+  /**
+   * Constructor of NewConversationPage
+   * @param loadingController
+   * @param participantService
+   * @param dataManager
+   * @param conversationService
+   * @param api
+   * @param navCtrl
+   * @param modalCtrl
+   */
   constructor(private loadingController: LoadingController,
               private participantService: ParticipantService,
               private dataManager: DataManagerService,
@@ -76,15 +90,25 @@ export class NewConversationPage implements OnInit {
               private modalCtrl: ModalController) {
   }
 
+  /**
+   * Initialisation of the components of the page
+   */
   ngOnInit() {
-    this.title = new FormControl('');
     this.selectedUsers = new Map<number, boolean>();
   }
 
+  /**
+   * Update the query for users
+   * @param event Trigger
+   */
   updateSearch(event: CustomEvent): void {
     this.searchValue = event.detail.value.toLowerCase();
   }
 
+  /**
+   * Select or deselect the given user
+   * @param user
+   */
   selectUser(user: User): void {
     this.selectedUsers.set(
       user.id_user,
@@ -93,11 +117,19 @@ export class NewConversationPage implements OnInit {
     );
   }
 
+  /**
+   * Tell if the user has been selected
+   * @param user
+   * @return true if the user is selected, false otherwise
+   */
   isUserSelected(user: User): boolean {
     return this.selectedUsers.get(user.id_user) ?
       this.selectedUsers.get(user.id_user) : false;
   }
 
+  /**
+   * Validate the conversation and send it to the server
+   */
   async validateConversation() {
     this.loading = await this.loadingController.create();
     await this.loading.present();
@@ -120,42 +152,37 @@ export class NewConversationPage implements OnInit {
       await this.modalCtrl.dismiss();
       await this.navCtrl.navigateForward(['conversation', conversationId]);
     } else {
-      let newConversation =
-        new Conversation(this.title.value == "" ? null : this.title.value);
-      this.api.addConversation(newConversation)
-        .then((newConversationId: number) => {
-          console.log(newConversationId); //WIP
-          conversationId = newConversationId;
-          return this.dataManager.synchroConversation();
-        })
-        .then(_ => this.addParticipants(newConversationUsersId, conversationId))
-        .then(_ => this.dataManager.synchroParticipants())
-        .then(async _ => {
-          await this.loading.dismiss();
-          await this.modalCtrl.dismiss();
-          await this.navCtrl
-            .navigateForward(['conversation', conversationId]);
-        })
+      let newConversation = new Conversation();
+      conversationId = await this.api.addConversation(newConversation);
+      await this.dataManager.synchroConversation();
+      await this.addParticipants(newConversationUsersId, conversationId);
+      await this.dataManager.synchroParticipants();
+      await this.loading.dismiss();
+      await this.modalCtrl.dismiss();
+      await this.navCtrl.navigateForward(['conversation', conversationId]);
     }
   }
 
-  addParticipants(usersId: number[], conversationId: number): Promise<any> {
+  /**
+   * Add participant locally to the conversation
+   * @param usersId
+   * @param conversationId
+   */
+  async addParticipants(usersId: number[], conversationId: number): Promise<any> {
     if (usersId.length > 0) {
       let participant = new Participant(usersId.pop(), conversationId);
-      return this.participantService.set(participant)
-        .then(_ => this.addParticipants(usersId, conversationId))
-        .catch(err => console.log(err));
-    } else {
-      return new Promise<any>(resolve => resolve(true));
+      await this.participantService.set(participant);
+      await this.addParticipants(usersId, conversationId);
     }
   }
 
   /**
    * Check if a conversation already exists, based on the usersId
    * @param usersId List of selected users
+   * @return the id of the conversation if it exists, -1 otherwise
    */
   isConversationExisting(usersId: number[]): number {
-    let conversationResults =  ConversationService.conversations
+    let conversationResults = ConversationService.conversations
       .filter((conversation: Conversation) => {
           let conversationParticipants = ParticipantService.participants
             .filter((participant: Participant) =>

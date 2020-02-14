@@ -8,7 +8,6 @@ import {UserService} from './database/user.service';
 import {Message} from '../model/message';
 import {Participant} from '../model/participant';
 import {Conversation} from '../model/conversation';
-import {User} from '../model/user';
 import {NotificationService} from './notification.service';
 
 @Injectable({
@@ -59,14 +58,11 @@ export class DataManagerService {
   /**
    * Send a message
    * Add it to the temporary table and handle the post request to the server
-   * TODO:
-   *  - handle errors
    * @param message
    */
-  sendMessage(message: Message): void {
-    this.messageService.set(message)
-      .then(_ => this.synchroMessages())
-      .catch(err => console.log(err));
+  async sendMessage(message: Message) {
+    await this.messageService.set(message);
+    await this.synchroMessages();
   }
 
   /**
@@ -85,15 +81,12 @@ export class DataManagerService {
    * Save multiple messages on the server and manage them locally
    * @param messages
    */
-  private saveMessages(messages: Message[]): Promise<any> {
+  private async saveMessages(messages: Message[]): Promise<any> {
     if (messages.length > 0) {
       let message = messages.pop();
-      return this.api.addMessage(message)
-        .then((insertId: number) => this.messageService.save(message,
-          insertId))
-        .then(_ => this.saveMessages(messages));
-    } else {
-      return new Promise<any>(resolve => resolve(true));
+      let insertId = await this.api.addMessage(message);
+      await this.messageService.save(message, insertId);
+      await this.saveMessages(messages);
     }
   }
 
@@ -101,46 +94,36 @@ export class DataManagerService {
    * Insert multiple messages coming from the server
    * @param messages
    */
-  private addMessages(messages: Message[]): Promise<any> {
+  private async addMessages(messages: Message[]): Promise<any> {
     if (messages.length > 0) {
       let message = messages.pop();
-      return this.messageService.set(message, true)
-        .then(_ => {
-          return this.addMessages(messages);
-        });
-    } else {
-      return new Promise<any>(resolve => resolve(true));
+      await this.messageService.set(message, true);
+      await this.addMessages(messages);
     }
   }
 
   /**
    * Do the synchronization between local and server for participant table
    */
-  synchroParticipants(): Promise<any> {
-    return this.participantService.getAllTemp()
-      .then((participants: Participant[]) =>
-        this.saveParticipants(participants))
-      .then(_ => this.api.getParticipants())
-      .then((participants: Participant[]) =>
-        this.addParticipants(participants))
-      .then(_ => {
-        this.participantService.updateLists();
-        return this.storage.setParticipantSynchroTime();
-      });
+  async synchroParticipants(): Promise<any> {
+    let participants = await this.participantService.getAllTemp();
+    await this.saveParticipants(participants);
+    participants = await this.api.getParticipants();
+    await this.addParticipants(participants);
+    await this.participantService.updateLists();
+    await this.storage.setParticipantSynchroTime();
   }
 
   /**
    * Save multiple participants on the server and manage them locally
    * @param participants
    */
-  private saveParticipants(participants: Participant[]): Promise<any> {
+  private async saveParticipants(participants: Participant[]): Promise<any> {
     if (participants.length > 0) {
       let participant = participants.pop();
-      return this.api.addParticipant(participant)
-        .then(_ => this.participantService.save(participant))
-        .then(_ => this.saveParticipants(participants));
-    } else {
-      return new Promise<any>(resolve => resolve(true));
+      await this.api.addParticipant(participant);
+      await this.participantService.save(participant);
+      await this.saveParticipants(participants);
     }
   }
 
@@ -148,67 +131,55 @@ export class DataManagerService {
    * Insert multiple participants coming from the server
    * @param participants
    */
-  private addParticipants(participants: Participant[]): Promise<any> {
+  private async addParticipants(participants: Participant[]): Promise<any> {
     if (participants.length > 0) {
       let participant = participants.pop();
-      return this.participantService.set(participant, true)
-        .then(_ => this.addParticipants(participants));
-    } else {
-      return new Promise<any>(resolve => resolve(true));
+      await this.participantService.set(participant, true);
+      await this.addParticipants(participants);
     }
   }
 
   /**
    * Do the synchronization between local and server for conversation table
    */
-  synchroConversation(): Promise<any> {
-    return this.api.getConversations()
-      .then((conversations: Conversation[]) => {
-        return this.addConversations(conversations);
-      })
-      .then(_ => {
-        this.conversationService.updateList();
-        return this.storage.setConversationSynchroTime();
-      });
+  async synchroConversation(): Promise<any> {
+    let conversations = await this.api.getConversations();
+    await this.addConversations(conversations);
+    await this.conversationService.updateList();
+    await this.storage.setConversationSynchroTime();
   }
 
   /**
    * Insert multiple conversations coming from the server
    * @param conversations
    */
-  private addConversations(conversations: Conversation[]): Promise<any> {
+  private async addConversations(conversations: Conversation[]): Promise<any> {
     if (conversations.length > 0) {
       let conversation = conversations.pop();
-      return this.conversationService.set(conversation)
-        .then(_ => this.addConversations(conversations));
-    } else {
-      return new Promise<any>(resolve => resolve(true));
+      await this.conversationService.set(conversation);
+      await this.addConversations(conversations);
     }
   }
 
   /**
    * Do the synchronization between local and server for the user table
    */
-  private synchroUser(): Promise<any> {
-    return this.userService.getMissingUsers()
-      .then((usersId: { id_user: number }[]) => {
-        this.userService.updateList();
-        return this.addUsers(usersId);
-      });
+  private async synchroUser(): Promise<any> {
+    let usersId = await this.userService.getMissingUsers();
+    await this.userService.updateList();
+    await this.addUsers(usersId);
   }
 
   /**
    * Insert multiple users in local database based on users' id
    * @param usersId
    */
-  private addUsers(usersId: { id_user: number }[]): Promise<any> {
+  private async addUsers(usersId: { id_user: number }[]): Promise<any> {
     if (usersId.length > 0) {
       let userId = usersId.pop();
-      return this.api.getUser(userId.id_user)
-        .then((user: User[]) => this.userService.set(user[0]))
-        .then(_ => this.addUsers(usersId));
-    } else {
-      return new Promise<any>(resolve => resolve(true));
+      let user = await this.api.getUser(userId.id_user);
+      await this.userService.set(user[0]);
+      await this.addUsers(usersId);
     }
   }
 }

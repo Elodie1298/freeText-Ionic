@@ -19,7 +19,7 @@ export class Conversation {
     timestamp: any;
 
 
-    constructor(title: string) {
+    constructor(title?: string) {
         this.title = title;
         this.timestamp = new Date();
     }

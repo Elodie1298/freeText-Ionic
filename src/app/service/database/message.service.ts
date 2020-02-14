@@ -1,10 +1,7 @@
 import {Injectable} from '@angular/core';
 import {DatabaseService} from './database.service';
 import {Message} from '../../model/message';
-import {
-  rowsToList,
-  timestampToInteger
-} from '../../app.const';
+import {rowsToList, timestampToInteger} from '../../app.const';
 import {NotificationService} from '../notification.service';
 
 @Injectable({
@@ -15,10 +12,20 @@ import {NotificationService} from '../notification.service';
  */
 export class MessageService {
 
+  /**
+   * List of messages
+   */
   static messages: Message[];
+
+  /**
+   * List of temporary messages
+   */
   static messagesTemp: Message[];
 
-
+  /**
+   * Constructor of MessageService
+   * @param notification
+   */
   constructor(private notification: NotificationService) {
   }
 
@@ -26,25 +33,24 @@ export class MessageService {
    * Update conversation lists
    */
   async updateLists() {
-    await DatabaseService.db.executeSql(
-      'select * from message_temp', [])
-      .then(result => rowsToList(result.rows))
-      .then((messages: Message[]) =>
-        MessageService.messagesTemp = messages);
-    await DatabaseService.db.executeSql(
-      'select * from message', [])
-      .then(result => rowsToList(result.rows))
-      .then((messages: Message[]) =>
-        MessageService.messages = messages);
+    // Update messagesTemp
+    let statement = 'select * from message_temp';
+    let result = await DatabaseService.db.executeSql(statement, []);
+    MessageService.messagesTemp = await rowsToList(result.rows);
+
+    // Update Messages
+    statement = 'select * from message';
+    result = await DatabaseService.db.executeSql(statement, []);
+    MessageService.messages = await rowsToList(result.rows);
   }
 
   /**
    * Get all messages stored in the temporary database
    */
-  getAllTemp(): Promise<Message[]> {
-    return DatabaseService.db.executeSql(
-      'select * from message_temp', [])
-      .then(result => rowsToList(result.rows));
+  async getAllTemp(): Promise<Message[]> {
+    let statement = 'select * from message_temp';
+    let result = await DatabaseService.db.executeSql(statement, []);
+    return await rowsToList(result.rows);
   }
 
   /**
@@ -52,32 +58,28 @@ export class MessageService {
    * @param message
    * @param fromServer
    */
-  set(message: Message, fromServer: boolean = false): Promise<any> {
-    let query: string;
+  async set(message: Message, fromServer: boolean = false): Promise<any> {
+    let statement: string;
     let params: any[];
     if (fromServer) {
-      query = 'insert into message (id_message, id_conversation,' +
+      statement = 'insert into message (id_message, id_conversation,' +
         ' id_user, content, timestamp) values (?, ?, ?, ?, ?)';
       params = [message.id_message, message.id_conversation,
         message.id_user, message.content,
         timestampToInteger(message.timestamp)];
-      return DatabaseService.db.executeSql(
-        'select * from message where id_message = ?'
-        , [message.id_message])
-        .then(result => {
-          if (result.rows.length > 0) {
-            return new Promise(resolve => resolve(true));
-          } else {
-            this.notification.addNotification(message);
-            return DatabaseService.db.executeSql(query, params);
-          }
-        });
+      let result = await DatabaseService.db.executeSql(
+        'select * from message where id_message = ?',
+        [message.id_message]);
+      if (result.rows.length == 0) {
+        this.notification.addNotification(message);
+        await DatabaseService.db.executeSql(statement, params);
+      }
     } else {
-      query = 'insert into message_temp (id_conversation,' +
+      statement = 'insert into message_temp (id_conversation,' +
         ' id_user, content, timestamp) values (?, ?, ?, ?)';
       params = [message.id_conversation, message.id_user,
         message.content, timestampToInteger(message.timestamp)];
-      return DatabaseService.db.executeSql(query, params);
+      await DatabaseService.db.executeSql(statement, params);
     }
   }
 
@@ -85,8 +87,8 @@ export class MessageService {
    * Delete message from temporary table
    * @param message
    */
-  private deleteTemp(message: Message): Promise<any> {
-    return DatabaseService.db.executeSql(
+  private async deleteTemp(message: Message): Promise<any> {
+    await DatabaseService.db.executeSql(
       'delete from message_temp where id_message = ?',
       [message.id_message]);
   }
@@ -96,11 +98,9 @@ export class MessageService {
    * @param message
    * @param server_id
    */
-  save(message, server_id): Promise<any> {
-    return this.deleteTemp(message)
-      .then(_ => {
-        message.id_message = server_id;
-        return this.set(message, true);
-      });
+  async save(message, server_id): Promise<any> {
+    await this.deleteTemp(message);
+    message.id_message = server_id;
+    await this.set(message, true);
   }
 }

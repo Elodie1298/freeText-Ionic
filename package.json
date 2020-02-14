@@ -1,12 +1,13 @@
 {
-  "name": "freeText-Ionic",
+  "name": "freeText",
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
     "lab": "ionic serve --lab",
-    "lr android": "ionic cordova run android --livereload",
+    "android-lr": "ionic cordova run android --livereload",
+    "build-android": "ionic cordova build android",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",

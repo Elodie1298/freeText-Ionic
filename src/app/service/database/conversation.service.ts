@@ -17,42 +17,44 @@ import {User} from '../../model/user';
  */
 export class ConversationService {
 
+  /**
+   * List of conversations
+   */
   static conversations: Conversation[];
 
   /**
    * Update conversation list
    */
-  updateList(): void {
-    DatabaseService.db.executeSql(
-      'SELECT * FROM conversation', [])
-      .then(result => rowsToList(result.rows))
-      .then((conversations: Conversation[]) =>
-        ConversationService.conversations = conversations);
+  async updateList() {
+    let statement = 'SELECT * FROM conversation';
+    let result = await DatabaseService.db.executeSql(statement, []);
+    ConversationService.conversations = await rowsToList(result.rows);
   }
 
   /**
    * Insert new conversation
+   * TODO: handle title update
    * @param conversation
    */
-  set(conversation: Conversation): Promise<any> {
-    return DatabaseService.db.executeSql(
-      'SELECT * FROM conversation WHERE id_conversation = ?',
-      [conversation.id_conversation])
-      .then(res => {
-        if (res.rows.length == 0) {
-          return DatabaseService.db.executeSql(
-            'INSERT INTO conversation (id_conversation, title,' +
-            ' timestamp) VALUES (?, ?, ?)',
-            [conversation.id_conversation, conversation.title,
-              timestampToInteger(conversation.timestamp)]);
-
-        } else {
-          // TODO: handle title update
-          return new Promise(resolve => resolve(true));
-        }
-      });
+  async set(conversation: Conversation): Promise<any> {
+    let statement = 'SELECT * FROM conversation WHERE id_conversation = ?';
+    let params: any[] = [conversation.id_conversation];
+    let result = await DatabaseService.db.executeSql(statement, params);
+    if (result.rows.length == 0) {
+      statement = 'INSERT INTO conversation (id_conversation, title,' +
+        ' timestamp) VALUES (?, ?, ?)';
+      params = [conversation.id_conversation, conversation.title,
+        timestampToInteger(conversation.timestamp)];
+      await DatabaseService.db.executeSql(statement, params);
+    }
   }
 
+  /**
+   * Get the title of a conversation
+   * If no title is registered, it gets the names of the participants
+   * except the logged user
+   * @param conversationId
+   */
   static getTitle(conversationId: number): string {
     let conversation = ConversationService.conversations
       .filter((conversationTemp: Conversation) =>
