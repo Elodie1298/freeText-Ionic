@@ -32,6 +32,16 @@ export class StartPage implements OnInit {
   phoneNumber: FormControl;
 
   /**
+   * Show the error message if the connection to the server failed
+   */
+  connectionError: boolean;
+
+  /**
+   * Is attempting to connect to the sevrer
+   */
+  isConnecting: boolean;
+
+  /**
    * Constructor of StartPage
    * @param api
    * @param storage
@@ -63,18 +73,22 @@ export class StartPage implements OnInit {
    * Send the user information to log him in and access the application
    */
   send() {
+    this.isConnecting = true;
     if (isNullOrUndefined(this.name.errors) &&
       isNullOrUndefined(this.phoneNumber.errors)) {
       this.api.login(this.name.value, this.phoneNumber.value)
         .then(user => this.storage.setUserId(user.id_user))
         .then(_ => this.dataManager.startSynchro())
-        .then(_ => this.navCtrl.navigateForward('/home'))
-        .catch(err => console.log(err));
-    } else {
-      //TODO:
-      // - handle error
-      // - inform user
-      console.log('error');
+        .then(_ => {
+          this.isConnecting = false;
+          return this.navCtrl.navigateForward('/home');
+        })
+        .catch(error => {
+          console.error(error);
+          this.isConnecting = false;
+          this.connectionError = true;
+          setTimeout(_ => this.connectionError = false, 7000);
+        });
     }
   }
 }
