@@ -16,6 +16,7 @@ import {NewConversationPageModule} from './components/home/new-conversation/new-
 import {NewConversationPage} from './components/home/new-conversation/new-conversation.page';
 import {LocalNotifications} from '@ionic-native/local-notifications/ngx';
 import {Keyboard} from '@ionic-native/keyboard/ngx';
+import {AES256} from '@ionic-native/aes-256/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -37,7 +38,8 @@ import {Keyboard} from '@ionic-native/keyboard/ngx';
     SQLite,
     SQLitePorter,
     LocalNotifications,
-    Keyboard
+    Keyboard,
+    AES256
   ],
   bootstrap: [AppComponent]
 })

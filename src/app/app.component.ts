@@ -8,6 +8,7 @@ import {DatabaseService} from './service/database/database.service';
 import {DataManagerService} from './service/data-manager.service';
 import {NotificationService} from './service/notification.service';
 import {error} from 'util';
+import {SecurityService} from './service/security.service';
 
 /**
  * App Component
@@ -28,6 +29,7 @@ export class AppComponent {
    * @param storageService
    * @param navCtrl
    * @param database
+   * @param security
    * @param notification
    * @param dataManager
    */
@@ -37,6 +39,7 @@ export class AppComponent {
               private storageService: StorageService,
               private navCtrl: NavController,
               private database: DatabaseService,
+              private security: SecurityService,
               private notification: NotificationService,
               private dataManager: DataManagerService) {
     this.initializeApp();
@@ -48,6 +51,7 @@ export class AppComponent {
   initializeApp() {
     this.platform.ready()
       .then(_ => this.database.init())
+      .then(_ => this.security.generateSecureKeyAndIV())
       .then(_ => this.storageService.isFirstLaunch())
       .then((isFirstLaunch: boolean) => {
         this.notification.setLocalNotification();
@@ -55,7 +59,7 @@ export class AppComponent {
           return this.dataManager.startSynchro()
             .then(_ => this.navCtrl.navigateRoot('/home', {animated: false}))
             .catch(error => {
-              console.log(error);
+              console.error(error);
               return this.navCtrl.navigateRoot('/home', {animated: false});
           });
         } else {

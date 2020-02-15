@@ -7,7 +7,8 @@ import {StorageService} from './storage.service';
 import {Message} from '../model/message';
 import {Participant} from '../model/participant';
 import {integerToTimestamp} from '../app.const';
-import {timeout} from 'rxjs/operators';
+import {map, timeout} from 'rxjs/operators';
+import {SecurityService} from './security.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class ApiService {
   /**
    * Timeout for the http requests
    */
-  timeout = 2000;
+  timeout = 3000;
 
   /**
    * Constructor of ApiService
@@ -28,6 +29,7 @@ export class ApiService {
    * @param storage
    */
   constructor(private http: HttpClient,
+              private security: SecurityService,
               private storage: StorageService) {
   }
 
@@ -124,6 +126,11 @@ export class ApiService {
     }
     return this.http.get(url)
       .pipe(timeout(this.timeout))
+      .pipe(map((messages: Message[]) => {
+        messages.forEach(async (m: Message) =>
+          await this.security.decrypt(m));
+        return messages;
+      }))
       .toPromise() as Promise<Message[]>;
   }
 
@@ -137,17 +144,20 @@ export class ApiService {
     let body = new URLSearchParams();
     body.set('id_user', message.id_user.toString());
     body.set('id_conversation', message.id_conversation.toString());
-    body.set('content', message.content
-      .replace('\'', '\'\''));
     body.set('timestamp', integerToTimestamp(message.timestamp));
-    return this.http.post(url, body.toString(),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+    return this.security.encrypt(message)
+      .then((encryptedMessage: Message) => {
+        body.set('content', encryptedMessage
+          .content.replace('\'', '\'\''));
+        return this.http.post(url, body.toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          })
+          .pipe(timeout(this.timeout))
+          .toPromise() as Promise<number>;
       })
-      .pipe(timeout(this.timeout))
-      .toPromise() as Promise<number>;
   }
 
 
