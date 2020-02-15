@@ -52,14 +52,4 @@ export class UserService {
       return await DatabaseService.db.executeSql(statement, params);
     }
   }
-
-  /**
-   * Return objects containing only the missing user's id
-   */
-  async getMissingUsers(): Promise<any[]> {
-    let statement = 'select p.id_user from participant p left outer join ' +
-      'user on user.id_user = p.id_user where user.id_user is null';
-    let result = await DatabaseService.db.executeSql(statement, []);
-    return rowsToList(result.rows);
-  }
 }

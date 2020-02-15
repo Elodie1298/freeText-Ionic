@@ -123,7 +123,7 @@ export class DataManagerService {
    */
   synchroParticipants(): Promise<any> {
     if (this.errors.length > 0) {
-      return this.messageService.updateLists();
+      return this.participantService.updateLists();
     } else {
       return this.participantService.getAllTemp()
         .then((m: Participant[]) => this.saveParticipants(m))
@@ -196,30 +196,23 @@ export class DataManagerService {
   /**
    * Do the synchronization between local and server for the user table
    */
-  private synchroUser(): Promise<any> {
-    if (this.errors.length > 0) {
-      return this.userService.updateList();
-    } else {
-      return this.userService.getMissingUsers()
-        .then((u: User[]) => this.addUsers(u))
-        .then(_ => this.userService.updateList())
-        .catch(error => {
-          this.errors.push(error);
-          return this.userService.updateList();
-        });
+  private async synchroUser(): Promise<any> {
+    if (this.errors.length == 0) {
+      let users = await this.api.getUsers();
+      await this.addUsers(users);
     }
+    await this.userService.updateList();
   }
 
   /**
    * Insert multiple users in local database based on users' id
-   * @param usersId
+   * @param users
    */
-  private async addUsers(usersId: { id_user: number }[]): Promise<any> {
-    if (usersId.length > 0) {
-      let userId = usersId.pop();
-      let user = await this.api.getUser(userId.id_user);
-      await this.userService.set(user[0]);
-      await this.addUsers(usersId);
+  private async addUsers(users: User[]): Promise<any> {
+    if (users.length > 0) {
+      let user = users.pop();
+      await this.userService.set(user);
+      await this.addUsers(users);
     }
   }
 }

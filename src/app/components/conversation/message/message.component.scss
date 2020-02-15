@@ -15,6 +15,7 @@ ion-item {
     flex-direction: column;
 
     .content {
+      width: fit-content;
       white-space: initial;
       padding: 8px 12px;
       border: solid 1px #ddd;

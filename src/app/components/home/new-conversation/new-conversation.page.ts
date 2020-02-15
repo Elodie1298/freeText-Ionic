@@ -5,7 +5,7 @@ import {StorageService} from '../../../service/storage.service';
 import {
   LoadingController,
   ModalController,
-  NavController
+  NavController, ToastController
 } from '@ionic/angular';
 import {ConversationService} from '../../../service/database/conversation.service';
 import {ParticipantService} from '../../../service/database/participant.service';
@@ -72,12 +72,18 @@ export class NewConversationPage implements OnInit {
   }
 
   /**
+   * Toast to show connection errors
+   */
+  toast: HTMLIonToastElement;
+
+  /**
    * Constructor of NewConversationPage
    * @param loadingController
    * @param participantService
    * @param dataManager
    * @param conversationService
    * @param api
+   * @param toastCtrl
    * @param navCtrl
    * @param modalCtrl
    */
@@ -86,6 +92,7 @@ export class NewConversationPage implements OnInit {
               private dataManager: DataManagerService,
               private conversationService: ConversationService,
               private api: ApiService,
+              private toastCtrl: ToastController,
               private navCtrl: NavController,
               private modalCtrl: ModalController) {
   }
@@ -95,6 +102,12 @@ export class NewConversationPage implements OnInit {
    */
   ngOnInit() {
     this.selectedUsers = new Map<number, boolean>();
+    this.toastCtrl.create({
+        message: 'The application could not connect to the server.',
+        color: 'danger',
+        duration: 6000
+      })
+      .then((toast: HTMLIonToastElement) => this.toast = toast);
   }
 
   /**
@@ -153,13 +166,20 @@ export class NewConversationPage implements OnInit {
       await this.navCtrl.navigateForward(['conversation', conversationId]);
     } else {
       let newConversation = new Conversation();
-      conversationId = await this.api.addConversation(newConversation);
-      await this.dataManager.synchroConversation();
-      await this.addParticipants(newConversationUsersId, conversationId);
-      await this.dataManager.synchroParticipants();
-      await this.loading.dismiss();
-      await this.modalCtrl.dismiss();
-      await this.navCtrl.navigateForward(['conversation', conversationId]);
+      return this.api.addConversation(newConversation)
+        .then(async (conversationId: number) => {
+          await this.dataManager.synchroConversation();
+          await this.addParticipants(newConversationUsersId, conversationId);
+          await this.dataManager.synchroParticipants();
+          await this.loading.dismiss();
+          await this.modalCtrl.dismiss();
+          return this.navCtrl.navigateForward(['conversation', conversationId]);
+        })
+        .catch(async error => {
+          console.log(error);
+          await this.loading.dismiss();
+          return this.toast.present();
+        })
     }
   }
 

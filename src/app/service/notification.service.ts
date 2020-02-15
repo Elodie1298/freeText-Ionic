@@ -8,6 +8,7 @@ import {UserService} from './database/user.service';
 import {User} from '../model/user';
 import {MessageService} from './database/message.service';
 import {Message} from '../model/message';
+import {StorageService} from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -68,11 +69,15 @@ export class NotificationService {
    */
   addNotification(message: Message): void {
     this.stack.push(message);
-    let nbUnread = this.unreadMessages.get(message.id_conversation);
-    if (nbUnread && nbUnread > 0) {
-      this.unreadMessages.set(message.id_conversation, nbUnread + 1);
+    if (message.id_user != StorageService.userId) {
+      let nbUnread = this.unreadMessages.get(message.id_conversation);
+      if (nbUnread && nbUnread > 0) {
+        this.unreadMessages.set(message.id_conversation, nbUnread + 1);
+      } else {
+        this.unreadMessages.set(message.id_conversation, 1);
+      }
     } else {
-      this.unreadMessages.set(message.id_conversation, 1);
+      this.unreadMessages.delete(message.id_conversation);
     }
   }
 

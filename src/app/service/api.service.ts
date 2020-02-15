@@ -66,6 +66,17 @@ export class ApiService {
 
 
   /**
+   * Get all users information
+   */
+  getUsers(): Promise<User[]> {
+    let url = `${environment.api}/user`;
+    return this.http.get(url)
+      .pipe(timeout(this.timeout))
+      .toPromise() as Promise<User[]>;
+  }
+
+
+  /**
    * Get user's conversations
    */
   async getConversations(): Promise<Conversation[]> {
