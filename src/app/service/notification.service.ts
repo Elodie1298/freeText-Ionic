@@ -69,15 +69,12 @@ export class NotificationService {
    */
   addNotification(message: Message): void {
     this.stack.push(message);
-    if (message.id_user != StorageService.userId) {
-      let nbUnread = this.unreadMessages.get(message.id_conversation);
-      if (nbUnread && nbUnread > 0) {
-        this.unreadMessages.set(message.id_conversation, nbUnread + 1);
-      } else {
-        this.unreadMessages.set(message.id_conversation, 1);
-      }
+
+    let nbUnread = this.unreadMessages.get(message.id_conversation);
+    if (nbUnread && nbUnread > 0) {
+      this.unreadMessages.set(message.id_conversation, nbUnread + 1);
     } else {
-      this.unreadMessages.delete(message.id_conversation);
+      this.unreadMessages.set(message.id_conversation, 1);
     }
   }
 

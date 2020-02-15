@@ -6,7 +6,6 @@ import {NewConversationPage} from './new-conversation/new-conversation.page';
 import {MessageService} from '../../service/database/message.service';
 import {Message} from '../../model/message';
 import {DataManagerService} from '../../service/data-manager.service';
-import {UserService} from '../../service/database/user.service';
 
 /**
  * Home page - list of conversations

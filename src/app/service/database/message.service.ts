@@ -57,8 +57,11 @@ export class MessageService {
    * Insert message into the appropriate database
    * @param message
    * @param fromServer
+   * @param ignoreNotifications
    */
-  async set(message: Message, fromServer: boolean = false): Promise<any> {
+  async set(message: Message,
+            fromServer: boolean = false,
+            ignoreNotifications: boolean = false): Promise<any> {
     let statement: string;
     let params: any[];
     if (fromServer) {
@@ -71,7 +74,9 @@ export class MessageService {
         'select * from message where id_message = ?',
         [message.id_message]);
       if (result.rows.length == 0) {
-        this.notification.addNotification(message);
+        if (!ignoreNotifications) {
+          this.notification.addNotification(message);
+        }
         await DatabaseService.db.executeSql(statement, params);
       }
     } else {
@@ -97,10 +102,11 @@ export class MessageService {
    * Save a message that has been saved to the server
    * @param message
    * @param server_id
+   * @param ignoreNotificatons
    */
-  async save(message, server_id): Promise<any> {
+  async save(message, server_id, ignoreNotificatons:boolean = false): Promise<any> {
     await this.deleteTemp(message);
     message.id_message = server_id;
-    await this.set(message, true);
+    await this.set(message, true, ignoreNotificatons);
   }
 }
