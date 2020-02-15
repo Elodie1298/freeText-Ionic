@@ -78,7 +78,7 @@ export class StartPage implements OnInit {
       isNullOrUndefined(this.phoneNumber.errors)) {
       this.api.login(this.name.value, this.phoneNumber.value)
         .then(user => this.storage.setUserId(user.id_user))
-        .then(_ => this.dataManager.startSynchro())
+        .then(_ => this.dataManager.startSynchro(true))
         .then(_ => {
           this.isConnecting = false;
           return this.navCtrl.navigateForward('/home');

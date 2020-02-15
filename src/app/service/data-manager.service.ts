@@ -47,10 +47,10 @@ export class DataManagerService {
   /**
    * Start and handle the synchronisation of the databases with the server
    */
-  async startSynchro() {
+  async startSynchro(ignoreNotifications: boolean = false) {
     this.errors = [];
     await this.synchroConversation();
-    await this.synchroMessages();
+    await this.synchroMessages(ignoreNotifications);
     await this.synchroParticipants();
     await this.synchroUser();
 
@@ -67,23 +67,24 @@ export class DataManagerService {
    * Send a message
    * Add it to the temporary table and handle the post request to the server
    * @param message
+   * @param ignoreNotificatons
    */
-  async sendMessage(message: Message) {
+  async sendMessage(message: Message, ignoreNotificatons:boolean = false) {
     await this.messageService.set(message);
-    await this.synchroMessages();
+    await this.synchroMessages(ignoreNotificatons);
   }
 
   /**
    * Do the synchronization between local and server for message table
    */
-  synchroMessages() {
+  synchroMessages(ignoreNotificatons:boolean = false) {
     if (this.errors.length > 0) {
       return this.messageService.updateLists();
     } else {
       return this.messageService.getAllTemp()
-        .then((m: Message[]) => this.saveMessages(m))
+        .then((m: Message[]) => this.saveMessages(m, ignoreNotificatons))
         .then(_ => this.api.getMessages())
-        .then((m: Message[]) => this.addMessages(m))
+        .then((m: Message[]) => this.addMessages(m, ignoreNotificatons))
         .then(_ => this.storage.setMessageSynchroTime())
         .then(_ => this.messageService.updateLists())
         .catch(error => {
@@ -96,12 +97,14 @@ export class DataManagerService {
   /**
    * Save multiple messages on the server and manage them locally
    * @param messages
+   * @param ignoreNotificatons
    */
-  private async saveMessages(messages: Message[]): Promise<any> {
+  private async saveMessages(messages: Message[],
+                             ignoreNotificatons:boolean = false): Promise<any> {
     if (messages.length > 0) {
       let message = messages.pop();
       let insertId = await this.api.addMessage(message);
-      await this.messageService.save(message, insertId);
+      await this.messageService.save(message, insertId, ignoreNotificatons);
       await this.saveMessages(messages);
     }
   }
@@ -109,12 +112,14 @@ export class DataManagerService {
   /**
    * Insert multiple messages coming from the server
    * @param messages
+   * @param ignoreNotificatons
    */
-  private async addMessages(messages: Message[]): Promise<any> {
+  private async addMessages(messages: Message[],
+                            ignoreNotificatons:boolean): Promise<any> {
     if (messages.length > 0) {
       let message = messages.pop();
-      await this.messageService.set(message, true);
-      await this.addMessages(messages);
+      await this.messageService.set(message, true, ignoreNotificatons);
+      await this.addMessages(messages, ignoreNotificatons);
     }
   }
 

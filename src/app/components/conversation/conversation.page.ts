@@ -124,7 +124,7 @@ export class ConversationPage implements OnInit {
       this.newMessage.toString() !== '') {
       let message = new Message(this.conversationId, StorageService.userId,
         this.newMessage.toString(), new Date());
-      this.dataManager.sendMessage(message)
+      this.dataManager.sendMessage(message, true)
         .then(_ => this.scrollToBottom())
         .catch(err => console.log(err));
       this.newMessage = null;
